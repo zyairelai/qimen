@@ -3,38 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <title>风后奇门</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <style>
     :root {
       --primary-color: #3b82f6;
       --bg-color: #f2f4f7;
       --border-color: #d0d6df;
+      --grid-bg: #ffffff;
     }
 
     body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg-color);
-      /* 防止手机端点击闪烁 */
       -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
 
-    /* --- Top Bar --- */
+    /* --- Top Bar (针对 Telegram 优化) --- */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 12px 10px;
+      gap: 6px;
+      padding: 12px 8px;
       background: #e5e9ef;
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
 
     .top-bar button {
-      padding: 8px 12px;
+      padding: 8px;
       font-size: 18px;
       border-radius: 8px;
       border: 1px solid #c5cbd6;
@@ -44,126 +45,116 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: all 0.2s;
-      min-width: 44px;
+      min-width: 42px;
       height: 40px;
     }
 
-    .top-bar button:active { transform: scale(0.95); background: #f0f0f0; }
-
     .datetime-display {
-      min-width: 160px;
+      flex: 1;
+      max-width: 180px;
       text-align: center;
       font-weight: 600;
-      font-size: 18px;
-      padding: 8px 12px;
+      font-size: 16px;
+      padding: 8px 4px;
       background: #fff;
       border-radius: 10px;
       border: 2px solid var(--primary-color);
-      cursor: pointer;
-      user-select: none;
       white-space: nowrap;
     }
 
-    /* --- Picker Overlay (遮罩层，防止走位核心) --- */
+    /* --- Telegram 弹窗专项修复 --- */
     .picker-overlay {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-      z-index: 1000;
+      /* 强制铺满全屏，不留死角 */
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* 改为靠顶对齐，防止被 Telegram 底部遮挡 */
+      padding-top: 80px; /* 距离顶部留一点距离 */
     }
     .picker-overlay.active { display: flex; }
 
     .custom-picker {
       background: white;
       border-radius: 16px;
-      padding: 20px;
-      width: 300px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .picker-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      font-weight: bold;
-      font-size: 18px;
+      padding: 16px;
+      width: 90%;
+      max-width: 320px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
 
     .picker-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 2px;
       text-align: center;
     }
 
     .picker-day {
       padding: 12px 0;
-      cursor: pointer;
-      border-radius: 8px;
-      font-size: 15px;
+      border-radius: 6px;
+      font-size: 14px;
     }
-
-    .picker-day:hover { background: #eef2ff; }
-    .picker-day.selected { background: var(--primary-color); color: white; font-weight: bold; }
+    .picker-day.selected { background: var(--primary-color); color: white; }
 
     .time-setter {
-      margin-top: 20px;
-      border-top: 1px solid #eee;
+      margin-top: 15px;
       padding-top: 15px;
+      border-top: 1px solid #eee;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .time-setter input {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 18px;
-      width: 120px;
-    }
-
-    .confirm-btn {
-      padding: 8px 20px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* --- Content Area --- */
-    .content {
+    /* --- 真正的九宫格布局 --- */
+    .grid-container {
       margin: 20px auto;
-      width: 90%; 
-      max-width: 800px;
-      padding: 40px 10px;
-      text-align: center;
-      color: #99a2aa;
-      border: 2px dashed var(--border-color);
-      border-radius: 16px;
-      background: #fff;
+      width: 95vw;
+      max-width: 500px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4px;
+      background: var(--border-color);
+      border: 4px solid #475569;
+      aspect-ratio: 1 / 1; /* 强制正方形 */
+    }
+
+    .grid-item {
+      background: var(--grid-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 5px;
+    }
+
+    /* 九宫格内的文字样式 */
+    .grid-item .position {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .grid-item .main-content {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1e293b;
+    }
+
+    .grid-item.center-palace {
+      background: #f8fafc;
     }
 
     @media (max-width: 480px) {
-      .top-bar { gap: 4px; padding: 8px 4px; }
-      .datetime-display { font-size: 16px; min-width: 140px; padding: 6px 8px; }
-      .top-bar button { padding: 6px; font-size: 16px; min-width: 38px; height: 36px;}
+      .top-bar button { min-width: 36px; height: 36px; font-size: 16px; }
+      .datetime-display { font-size: 15px; }
+      .grid-item .main-content { font-size: 20px; }
     }
   </style>
 </head>
@@ -179,20 +170,57 @@
 
 <div class="picker-overlay" id="overlay">
   <div class="custom-picker">
-    <div class="picker-header">
-      <span style="padding:10px; cursor:pointer" onclick="changeMonth(-1)">◀</span>
+    <div class="picker-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-weight:bold;">
+      <span style="padding:10px;" onclick="changeMonth(-1)">◀</span>
       <span id="monthYearTitle"></span>
-      <span style="padding:10px; cursor:pointer" onclick="changeMonth(1)">▶</span>
+      <span style="padding:10px;" onclick="changeMonth(1)">▶</span>
     </div>
     <div class="picker-grid" id="daysGrid"></div>
     <div class="time-setter">
-      <input type="time" id="timeInput">
-      <button class="confirm-btn" onclick="confirmTime()">确定</button>
+      <input type="time" id="timeInput" style="font-size:18px; padding:5px; border-radius:6px; border:1px solid #ddd;">
+      <button onclick="confirmTime()" style="padding:8px 20px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold;">确定</button>
     </div>
   </div>
 </div>
 
-<div class="content">奇門遁甲盤 UI 區域</div>
+<div class="grid-container" id="qimenGrid">
+  <div class="grid-item">
+    <span class="position">巽四</span>
+    <div class="main-content">巽</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">离九</span>
+    <div class="main-content">离</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">坤二</span>
+    <div class="main-content">坤</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">震三</span>
+    <div class="main-content">震</div>
+  </div>
+  <div class="grid-item center-palace">
+    <span class="position">中五</span>
+    <div class="main-content">中</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">兑七</span>
+    <div class="main-content">兑</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">艮八</span>
+    <div class="main-content">艮</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">坎一</span>
+    <div class="main-content">坎</div>
+  </div>
+  <div class="grid-item">
+    <span class="position">乾六</span>
+    <div class="main-content">乾</div>
+  </div>
+</div>
 
 <script>
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -213,7 +241,6 @@
 
   function init() {
     renderUI();
-    // 点击遮罩层空白处关闭日历
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closePicker();
     });
@@ -246,12 +273,7 @@
 
     for (let day = 1; day <= lastDate; day++) {
       const dayEl = document.createElement('div');
-      dayEl.className = 'picker-day';
-      if (day === selectedDate.getDate() && 
-          month === selectedDate.getMonth() && 
-          year === selectedDate.getFullYear()) {
-        dayEl.classList.add('selected');
-      }
+      dayEl.className = 'picker-day' + (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear() ? ' selected' : '');
       dayEl.textContent = day;
       dayEl.onclick = (e) => {
         e.stopPropagation();
@@ -279,12 +301,12 @@
 
   function openPicker() {
     overlay.classList.add('active');
-    document.body.style.overflow = 'hidden'; // 锁定背景滚动
+    document.body.style.overflow = 'hidden';
   }
 
   function closePicker() {
     overlay.classList.remove('active');
-    document.body.style.overflow = ''; // 恢复背景滚动
+    document.body.style.overflow = '';
   }
 
   dateShow.onclick = openPicker;
@@ -309,9 +331,8 @@
 
   document.getElementById('copyBtn').onclick = function() {
     navigator.clipboard.writeText(dateShow.textContent);
-    const originalText = this.textContent;
     this.textContent = '✅';
-    setTimeout(() => { this.textContent = originalText; }, 800);
+    setTimeout(() => { this.textContent = '📋'; }, 800);
   };
 
   init();
