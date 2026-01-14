@@ -17,19 +17,21 @@
       background: var(--bg-color);
     }
 
+    /* --- MOBILE COMPACT TOP BAR --- */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      padding: 12px;
+      gap: 8px; /* Reduced gap for mobile */
+      padding: 10px 6px;
       background: #e5e9ef;
       border-bottom: 1px solid var(--border-color);
+      flex-wrap: nowrap; /* Keep items on one line */
     }
 
     .top-bar button {
-      padding: 8px 14px;
-      font-size: 18px;
+      padding: 8px 10px;
+      font-size: 16px; /* Slightly smaller for mobile */
       border-radius: 8px;
       border: 1px solid #c5cbd6;
       background: #fff;
@@ -37,6 +39,7 @@
       display: flex;
       align-items: center;
       transition: all 0.2s;
+      flex-shrink: 0; /* Prevent buttons from squishing */
     }
 
     .top-bar button:hover { background: #f0f2f6; }
@@ -44,35 +47,45 @@
 
     .datetime-container {
       position: relative;
-      display: inline-block;
+      flex-grow: 1; /* Let the date display take available space */
+      max-width: 200px; /* Limit width so it doesn't push buttons off screen */
     }
 
     .datetime-display {
-      min-width: 240px;
+      width: 100%;
+      box-sizing: border-box;
       text-align: center;
       font-weight: 600;
-      font-size: 20px;
-      padding: 8px 16px;
+      font-size: 15px; /* Compact font for mobile */
+      padding: 8px 4px;
       background: #fff;
       border-radius: 10px;
       border: 2px solid var(--primary-color);
       cursor: pointer;
       user-select: none;
-      transition: all 0.2s;
+      white-space: nowrap;
     }
 
+    /* --- RESPONSIVE PICKER --- */
     .custom-picker {
       display: none;
       position: absolute;
-      top: calc(100% + 5px);
+      top: calc(100% + 10px);
       left: 50%;
       transform: translateX(-50%);
       background: white;
       border: 1px solid var(--border-color);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       border-radius: 12px;
       z-index: 1000;
       padding: 15px;
+      width: 280px; /* Fixed width for consistency */
+    }
+
+    @media (max-width: 400px) {
+      .custom-picker {
+        width: 85vw; /* Almost full width on very small screens */
+      }
     }
 
     .custom-picker.active { display: block; }
@@ -83,18 +96,17 @@
       align-items: center;
       margin-bottom: 10px;
       font-weight: bold;
-      min-width: 180px;
     }
 
     .picker-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 2px;
       text-align: center;
     }
 
     .picker-day {
-      padding: 8px;
+      padding: 10px 0; /* Larger hit area for fingers */
       cursor: pointer;
       border-radius: 4px;
       font-size: 14px;
@@ -110,57 +122,72 @@
       padding-top: 10px;
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 10px;
     }
 
     .time-setter input {
-      padding: 5px;
+      padding: 8px;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 6px;
+      font-size: 16px; /* Prevents iOS auto-zoom on focus */
     }
 
+    /* --- CONTENT AREA --- */
     .content {
-      margin: 50px auto;
-      width: 90%; max-width: 800px;
-      padding: 60px 20px;
+      margin: 20px auto;
+      width: 90%; 
+      max-width: 800px;
+      padding: 40px 10px;
       text-align: center;
       color: #99a2aa;
       border: 2px dashed var(--border-color);
       border-radius: 16px;
       background: #fff;
     }
+
+    /* Media Query for Desktop refinements */
+    @media (min-width: 600px) {
+      .datetime-display {
+        font-size: 18px;
+        padding: 8px 16px;
+      }
+      .top-bar { gap: 12px; padding: 12px; }
+      .content { margin: 50px auto; padding: 60px 20px; }
+    }
   </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <button id="prevBtn">⬅️</button>
+  <button id="prevBtn" title="Previous 2 Hours">◀</button>
 
   <div class="datetime-container">
     <div class="datetime-display" id="dateShow">Loading...</div>
     
     <div class="custom-picker" id="pickerBox">
       <div class="picker-header">
-        <span style="cursor:pointer" onclick="changeMonth(-1)">◀</span>
+        <span style="padding: 10px; cursor:pointer" onclick="changeMonth(-1)">◀</span>
         <span id="monthYearTitle">Jan 2026</span>
-        <span style="cursor:pointer" onclick="changeMonth(1)">▶</span>
+        <span style="padding: 10px; cursor:pointer" onclick="changeMonth(1)">▶</span>
       </div>
       <div class="picker-grid" id="daysGrid"></div>
       <div class="time-setter">
         <input type="time" id="timeInput">
-        <button onclick="confirmTime()" style="font-size:12px; padding:4px 8px;">OK</button>
+        <button onclick="confirmTime()" style="font-size:14px; padding:8px 12px; background: var(--primary-color); color: white; border: none;">OK</button>
       </div>
     </div>
   </div>
 
-  <button id="nextBtn">➡️</button>
-  <button id="nowBtn">🕒</button>
-  <button id="copyBtn">📋</button>
+  <button id="nextBtn" title="Next 2 Hours">▶</button>
+  <button id="nowBtn" title="Current Time">🕒</button>
+  <button id="copyBtn" title="Copy Date">📋</button>
 </div>
 
 <div class="content">奇門遁甲盤 UI 區域</div>
 
 <script>
+  // ... (Keep your existing JavaScript logic here, it works perfectly with these styles) ...
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   function getGmt8Date() {
@@ -199,7 +226,6 @@
     daysGrid.innerHTML = '';
     const year = currentViewDate.getFullYear();
     const month = currentViewDate.getMonth();
-    // 修改处：使用英文月份
     document.getElementById('monthYearTitle').textContent = `${MONTH_NAMES[month]} ${year}`;
 
     const firstDay = new Date(year, month, 1).getDay();
@@ -255,16 +281,13 @@
     renderUI();
   };
 
-  // 修改处：移除 alert，改为视觉反馈
   document.getElementById('copyBtn').onclick = function() {
     navigator.clipboard.writeText(dateShow.textContent);
-    
-    // 简单的视觉反馈：按钮变绿 1秒后恢复
     const originalText = this.textContent;
     this.textContent = '✅';
     setTimeout(() => {
       this.textContent = originalText;
-    }, 1000);
+    }, 800);
   };
 
   init();
