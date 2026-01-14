@@ -15,19 +15,22 @@
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg-color);
+      /* 防止手机端点击闪烁 */
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* --- THE FIX: Centered on Web, Responsive on Mobile --- */
+    /* --- Top Bar --- */
     .top-bar {
       display: flex;
       align-items: center;
-      justify-content: center; /* Keeps it compact and centered like original */
+      justify-content: center;
       gap: 8px;
       padding: 12px 10px;
       background: #e5e9ef;
       border-bottom: 1px solid var(--border-color);
-      box-sizing: border-box;
-      flex-wrap: wrap; /* Allows shifting if the screen is EXTREMELY narrow */
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .top-bar button {
@@ -40,7 +43,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0; /* Prevents buttons from squishing */
+      flex-shrink: 0;
       transition: all 0.2s;
       min-width: 44px;
       height: 40px;
@@ -48,14 +51,8 @@
 
     .top-bar button:active { transform: scale(0.95); background: #f0f0f0; }
 
-    .datetime-container {
-      position: relative;
-      display: inline-block;
-      flex-shrink: 0;
-    }
-
     .datetime-display {
-      min-width: 180px; /* Reduced min-width for mobile safety */
+      min-width: 160px;
       text-align: center;
       font-weight: 600;
       font-size: 18px;
@@ -66,33 +63,44 @@
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
-      box-sizing: border-box;
     }
 
-    /* --- PICKER BOX --- */
-    .custom-picker {
+    /* --- Picker Overlay (遮罩层，防止走位核心) --- */
+    .picker-overlay {
       display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      border-radius: 12px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
       z-index: 1000;
-      padding: 15px;
-      width: 280px;
+      justify-content: center;
+      align-items: center;
+    }
+    .picker-overlay.active { display: flex; }
+
+    .custom-picker {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: fadeIn 0.2s ease-out;
     }
 
-    .custom-picker.active { display: block; }
+    @keyframes fadeIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
     .picker-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       font-weight: bold;
+      font-size: 18px;
     }
 
     .picker-grid {
@@ -103,37 +111,48 @@
     }
 
     .picker-day {
-      padding: 10px 0;
+      padding: 12px 0;
       cursor: pointer;
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 15px;
     }
 
     .picker-day:hover { background: #eef2ff; }
-    .picker-day.selected { background: var(--primary-color); color: white; }
+    .picker-day.selected { background: var(--primary-color); color: white; font-weight: bold; }
 
     .time-setter {
-      margin-top: 15px;
+      margin-top: 20px;
       border-top: 1px solid #eee;
-      padding-top: 10px;
+      padding-top: 15px;
       display: flex;
-      justify-content: center;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .time-setter input {
-      padding: 6px;
+      padding: 8px;
       border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
+      border-radius: 6px;
+      font-size: 18px;
+      width: 120px;
     }
 
-    /* --- CONTENT AREA --- */
+    .confirm-btn {
+      padding: 8px 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* --- Content Area --- */
     .content {
-      margin: 40px auto;
+      margin: 20px auto;
       width: 90%; 
       max-width: 800px;
-      padding: 60px 20px;
+      padding: 40px 10px;
       text-align: center;
       color: #99a2aa;
       border: 2px dashed var(--border-color);
@@ -141,11 +160,10 @@
       background: #fff;
     }
 
-    /* Mobile specific adjustments for Telegram/Tiny screens */
     @media (max-width: 480px) {
       .top-bar { gap: 4px; padding: 8px 4px; }
-      .datetime-display { font-size: 15px; min-width: 150px; padding: 8px 6px; }
-      .top-bar button { padding: 8px; font-size: 16px; min-width: 38px; }
+      .datetime-display { font-size: 16px; min-width: 140px; padding: 6px 8px; }
+      .top-bar button { padding: 6px; font-size: 16px; min-width: 38px; height: 36px;}
     }
   </style>
 </head>
@@ -153,27 +171,25 @@
 
 <div class="top-bar">
   <button id="prevBtn">◀</button>
-
-  <div class="datetime-container">
-    <div class="datetime-display" id="dateShow">Loading...</div>
-    
-    <div class="custom-picker" id="pickerBox">
-      <div class="picker-header">
-        <span style="padding:5px 10px; cursor:pointer" onclick="changeMonth(-1)">◀</span>
-        <span id="monthYearTitle">Jan 2026</span>
-        <span style="padding:5px 10px; cursor:pointer" onclick="changeMonth(1)">▶</span>
-      </div>
-      <div class="picker-grid" id="daysGrid"></div>
-      <div class="time-setter">
-        <input type="time" id="timeInput">
-        <button onclick="confirmTime()" style="font-size:12px; padding:4px 8px; background:var(--primary-color); color:white; border:none; border-radius:4px;">OK</button>
-      </div>
-    </div>
-  </div>
-
+  <div class="datetime-display" id="dateShow">Loading...</div>
   <button id="nextBtn">▶</button>
   <button id="nowBtn">🕒</button>
   <button id="copyBtn">📋</button>
+</div>
+
+<div class="picker-overlay" id="overlay">
+  <div class="custom-picker">
+    <div class="picker-header">
+      <span style="padding:10px; cursor:pointer" onclick="changeMonth(-1)">◀</span>
+      <span id="monthYearTitle"></span>
+      <span style="padding:10px; cursor:pointer" onclick="changeMonth(1)">▶</span>
+    </div>
+    <div class="picker-grid" id="daysGrid"></div>
+    <div class="time-setter">
+      <input type="time" id="timeInput">
+      <button class="confirm-btn" onclick="confirmTime()">确定</button>
+    </div>
+  </div>
 </div>
 
 <div class="content">奇門遁甲盤 UI 區域</div>
@@ -191,14 +207,15 @@
   let selectedDate = getGmt8Date();
 
   const dateShow = document.getElementById('dateShow');
-  const pickerBox = document.getElementById('pickerBox');
+  const overlay = document.getElementById('overlay');
   const daysGrid = document.getElementById('daysGrid');
   const timeInput = document.getElementById('timeInput');
 
   function init() {
     renderUI();
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.datetime-container')) pickerBox.classList.remove('active');
+    // 点击遮罩层空白处关闭日历
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closePicker();
     });
   }
 
@@ -208,6 +225,7 @@
     const d = String(selectedDate.getDate()).padStart(2, '0');
     const h = String(selectedDate.getHours()).padStart(2, '0');
     const min = String(selectedDate.getMinutes()).padStart(2, '0');
+    
     dateShow.textContent = `${y}-${m}-${d} ${h}:${min}`;
     timeInput.value = `${h}:${min}`;
     renderCalendar();
@@ -229,7 +247,9 @@
     for (let day = 1; day <= lastDate; day++) {
       const dayEl = document.createElement('div');
       dayEl.className = 'picker-day';
-      if (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+      if (day === selectedDate.getDate() && 
+          month === selectedDate.getMonth() && 
+          year === selectedDate.getFullYear()) {
         dayEl.classList.add('selected');
       }
       dayEl.textContent = day;
@@ -254,22 +274,33 @@
     selectedDate.setHours(h);
     selectedDate.setMinutes(m);
     renderUI();
-    pickerBox.classList.remove('active');
+    closePicker();
   }
 
-  dateShow.onclick = (e) => {
-    e.stopPropagation();
-    pickerBox.classList.toggle('active');
-  };
+  function openPicker() {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden'; // 锁定背景滚动
+  }
+
+  function closePicker() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = ''; // 恢复背景滚动
+  }
+
+  dateShow.onclick = openPicker;
 
   document.getElementById('prevBtn').onclick = () => {
     selectedDate.setHours(selectedDate.getHours() - 2);
+    currentViewDate = new Date(selectedDate);
     renderUI();
   };
+  
   document.getElementById('nextBtn').onclick = () => {
     selectedDate.setHours(selectedDate.getHours() + 2);
+    currentViewDate = new Date(selectedDate);
     renderUI();
   };
+
   document.getElementById('nowBtn').onclick = () => {
     selectedDate = getGmt8Date();
     currentViewDate = new Date(selectedDate);
