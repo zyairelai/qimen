@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>风后奇门</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --bg-color: #f2f4f7;
+      --border-color: #d0d6df;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg-color);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      background: #e5e9ef;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .top-bar button {
+      padding: 8px 14px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: 1px solid #c5cbd6;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .top-bar button:hover { background: #f0f2f6; }
+    .top-bar button:active { transform: scale(0.95); }
+
+    .datetime-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .datetime-display {
+      min-width: 240px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 20px;
+      padding: 8px 16px;
+      background: #fff;
+      border-radius: 10px;
+      border: 2px solid var(--primary-color);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .custom-picker {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      z-index: 1000;
+      padding: 15px;
+    }
+
+    .custom-picker.active { display: block; }
+
+    .picker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      min-width: 180px;
+    }
+
+    .picker-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+    }
+
+    .picker-day {
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .picker-day:hover { background: #eef2ff; }
+    .picker-day.selected { background: var(--primary-color); color: white; }
+    .picker-day.today { color: var(--primary-color); font-weight: bold; }
+
+    .time-setter {
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .time-setter input {
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .content {
+      margin: 50px auto;
+      width: 90%; max-width: 800px;
+      padding: 60px 20px;
+      text-align: center;
+      color: #99a2aa;
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button id="prevBtn">⬅️</button>
+
+  <div class="datetime-container">
+    <div class="datetime-display" id="dateShow">Loading...</div>
+    
+    <div class="custom-picker" id="pickerBox">
+      <div class="picker-header">
+        <span style="cursor:pointer" onclick="changeMonth(-1)">◀</span>
+        <span id="monthYearTitle">Jan 2026</span>
+        <span style="cursor:pointer" onclick="changeMonth(1)">▶</span>
+      </div>
+      <div class="picker-grid" id="daysGrid"></div>
+      <div class="time-setter">
+        <input type="time" id="timeInput">
+        <button onclick="confirmTime()" style="font-size:12px; padding:4px 8px;">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="nextBtn">➡️</button>
+  <button id="nowBtn">🕒</button>
+  <button id="copyBtn">📋</button>
+</div>
+
+<div class="content">奇門遁甲盤 UI 區域</div>
+
+<script>
+  const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function getGmt8Date() {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    return new Date(utc + (3600000 * 8));
+  }
+
+  let currentViewDate = getGmt8Date();
+  let selectedDate = getGmt8Date();
+
+  const dateShow = document.getElementById('dateShow');
+  const pickerBox = document.getElementById('pickerBox');
+  const daysGrid = document.getElementById('daysGrid');
+  const timeInput = document.getElementById('timeInput');
+
+  function init() {
+    renderUI();
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.datetime-container')) pickerBox.classList.remove('active');
+    });
+  }
+
+  function renderUI() {
+    const y = selectedDate.getFullYear();
+    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const d = String(selectedDate.getDate()).padStart(2, '0');
+    const h = String(selectedDate.getHours()).padStart(2, '0');
+    const min = String(selectedDate.getMinutes()).padStart(2, '0');
+    dateShow.textContent = `${y}-${m}-${d} ${h}:${min}`;
+    timeInput.value = `${h}:${min}`;
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    daysGrid.innerHTML = '';
+    const year = currentViewDate.getFullYear();
+    const month = currentViewDate.getMonth();
+    // 修改处：使用英文月份
+    document.getElementById('monthYearTitle').textContent = `${MONTH_NAMES[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      daysGrid.appendChild(document.createElement('div'));
+    }
+
+    for (let day = 1; day <= lastDate; day++) {
+      const dayEl = document.createElement('div');
+      dayEl.className = 'picker-day';
+      if (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+        dayEl.classList.add('selected');
+      }
+      dayEl.textContent = day;
+      dayEl.onclick = () => {
+        selectedDate.setFullYear(year);
+        selectedDate.setMonth(month);
+        selectedDate.setDate(day);
+        renderUI();
+      };
+      daysGrid.appendChild(dayEl);
+    }
+  }
+
+  function changeMonth(step) {
+    currentViewDate.setMonth(currentViewDate.getMonth() + step);
+    renderCalendar();
+  }
+
+  function confirmTime() {
+    const [h, m] = timeInput.value.split(':');
+    selectedDate.setHours(h);
+    selectedDate.setMinutes(m);
+    renderUI();
+    pickerBox.classList.remove('active');
+  }
+
+  dateShow.onclick = () => pickerBox.classList.toggle('active');
+
+  document.getElementById('prevBtn').onclick = () => {
+    selectedDate.setHours(selectedDate.getHours() - 2);
+    renderUI();
+  };
+  document.getElementById('nextBtn').onclick = () => {
+    selectedDate.setHours(selectedDate.getHours() + 2);
+    renderUI();
+  };
+  document.getElementById('nowBtn').onclick = () => {
+    selectedDate = getGmt8Date();
+    currentViewDate = new Date(selectedDate);
+    renderUI();
+  };
+
+  // 修改处：移除 alert，改为视觉反馈
+  document.getElementById('copyBtn').onclick = function() {
+    navigator.clipboard.writeText(dateShow.textContent);
+    
+    // 简单的视觉反馈：按钮变绿 1秒后恢复
+    const originalText = this.textContent;
+    this.textContent = '✅';
+    setTimeout(() => {
+      this.textContent = originalText;
+    }, 1000);
+  };
+
+  init();
+</script>
+</body>
+</html>
