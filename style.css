@@ -1,0 +1,149 @@
+:root {
+    --primary-color: #3b82f6;
+    --bg-color: #f2f4f7;
+    --border-color: #d0d6df;
+    --grid-bg: #ffffff;
+    --accent-color: #ef4444;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg-color);
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+.top-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    background: #e5e9ef;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.top-bar button {
+    padding: 8px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 1px solid #c5cbd6;
+    background: #fff;
+    cursor: pointer;
+    min-width: 42px;
+    height: 40px;
+}
+
+.datetime-display {
+    flex: 1;
+    max-width: 180px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 8px 4px;
+    background: #fff;
+    border-radius: 10px;
+    border: 2px solid var(--primary-color);
+}
+
+.lunar-info {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--accent-color);
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.4;
+    white-space: pre-line; /* 保持换行显示 */
+}
+
+/* Picker Styles */
+.picker-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; right: 0; bottom: 0; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 9999; 
+    justify-content: center; 
+    align-items: flex-start; 
+    padding-top: 80px; 
+}
+
+.picker-overlay.active { display: flex; }
+
+.custom-picker { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 16px; 
+    width: 90%; 
+    max-width: 320px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+}
+
+.picker-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 2px; 
+    text-align: center; 
+}
+
+.picker-day { padding: 12px 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.picker-day.selected { background: var(--primary-color); color: white; }
+
+.time-setter { 
+    margin-top: 15px; 
+    padding-top: 15px; 
+    border-top: 1px solid #eee; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+/* Qimen Grid */
+.grid-container { 
+    margin: 20px auto; 
+    width: 95vw; 
+    max-width: 500px; 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr); 
+    gap: 4px; 
+    background: var(--border-color); 
+    border: 4px solid #475569; 
+    aspect-ratio: 1 / 1; 
+}
+
+.grid-item { 
+    background: var(--grid-bg); 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    position: relative; 
+}
+
+.grid-item .position { 
+    position: absolute; 
+    bottom: 8px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    font-size: 13px; 
+    color: #94a3b8; 
+    white-space: nowrap; 
+}
+
+.grid-item .main-content { 
+    font-size: 28px; 
+    font-weight: bold; 
+    color: #1e293b; 
+}
