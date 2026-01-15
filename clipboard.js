@@ -8,10 +8,9 @@ window.addEventListener('load', () => {
     copyBtn.onclick = function() {
         if (timer) clearTimeout(timer);
 
-        const dateShow = document.getElementById('dateShow');
         const lunarShow = document.getElementById('lunarShow');
-        const fullText = `${dateShow.textContent} (${lunarShow.textContent.replace(/\n/g, ' ')})`;
-        
+        const fullText = lunarShow.textContent; // 只复制三行内容
+
         navigator.clipboard.writeText(fullText);
         this.textContent = '✅';
         
