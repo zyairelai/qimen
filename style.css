@@ -78,9 +78,13 @@ body {
     font-size: 14px;
     color: var(--accent-color);
     font-weight: bold;
-    text-align: center;
     line-height: 1.4;
     white-space: pre-line;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 55px;
+    text-align: left;
 }
 
 .picker-overlay { 
@@ -105,11 +109,20 @@ body {
     box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
 }
 
+.picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
 .picker-header span {
     outline: none !important;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     cursor: pointer;
+    padding: 10px;
 }
 
 .picker-grid { 
@@ -144,6 +157,29 @@ body {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
+}
+
+#monthYearTitle {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+}
+
+#timeInput {
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+#confirmTimeBtn {
+    padding: 8px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .grid-container { 

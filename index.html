@@ -7,6 +7,7 @@
   
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+  <script src="yinyang.js"></script>
 </head>
 <body>
 
@@ -18,23 +19,23 @@
     <button id="nowBtn">🕒</button>
     <button id="copyBtn">📋</button>
   </div>
-  <div class="lunar-info" id="lunarShow" style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 55px; text-align: left;">LOADING...</div>
+  <div class="lunar-info" id="lunarShow">LOADING...</div>
 </div>
 
 <div class="picker-overlay" id="overlay">
   <div class="custom-picker">
-    <div class="picker-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-weight:bold;">
-      <span style="padding:10px; cursor:pointer" id="prevMonth">◀</span>
-      <div id="monthYearTitle" style="display:flex; gap:10px; cursor:pointer;">
+    <div class="picker-header">
+      <span id="prevMonth">◀</span>
+      <div id="monthYearTitle">
         <span id="selectMonthText"></span> 
         <span id="selectYearText"></span>
       </div>
-      <span style="padding:10px; cursor:pointer" id="nextMonth">▶</span>
+      <span id="nextMonth">▶</span>
     </div>
     <div class="picker-grid" id="daysGrid"></div>
     <div class="time-setter">
-      <input type="time" id="timeInput" style="font-size:18px; padding:5px; border-radius:6px; border:1px solid #ddd;">
-      <button id="confirmTimeBtn" style="padding:8px 20px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold;">OK</button>
+      <input type="time" id="timeInput">
+      <button id="confirmTimeBtn">OK</button>
     </div>
   </div>
 </div>
@@ -51,112 +52,10 @@
   <div class="grid-item"><div class="main-content"></div> <span class="position">六</span></div>
 </div>
 
-<script>
-  // --- 全局状态管理 ---
-  let currentViewDate = getGmt8Date();
-  let selectedDate = getGmt8Date();
-
-  function getGmt8Date() {
-    const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    return new Date(utc + (3600000 * 8));
-  }
-
-  function renderUI() {
-    const dateShow = document.getElementById('dateShow');
-    const lunarShow = document.getElementById('lunarShow');
-    const timeInput = document.getElementById('timeInput');
-
-    const y = selectedDate.getFullYear();
-    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const d = String(selectedDate.getDate()).padStart(2, '0');
-    const h = String(selectedDate.getHours()).padStart(2, '0');
-    const min = String(selectedDate.getMinutes()).padStart(2, '0');
-
-    dateShow.textContent = `${y}-${m}-${d} ${h}:${min}`;
-    timeInput.value = `${h}:${min}`;
-
-    // 获取农历与干支
-    const lunar = Lunar.fromDate(selectedDate);
-    let dayLunar = lunar;
-    if (selectedDate.getHours() === 23) {
-      const nextDay = new Date(selectedDate.getTime() + 3600000);
-      dayLunar = Lunar.fromDate(nextDay);
-    }
-
-    const gzYear = lunar.getYearInGanZhi();
-    const gzMonth = lunar.getMonthInGanZhi();
-    const gzDay = dayLunar.getDayInGanZhi(); 
-    const gzTime = lunar.getTimeInGanZhi();
-    const lunarMonth = lunar.getMonthInChinese();
-    const lunarDay = lunar.getDayInChinese();
-
-    // 输出格式修改
-    const weekDay = selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' });
-    
-    lunarShow.textContent = [
-        `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
-        `农历：${selectedDate.getFullYear()}年${lunarMonth}月${lunarDay}`,
-        `干支：${gzYear}年 ${gzMonth}月 ${gzDay}日 ${gzTime}时`,
-        `局数：旬首：`,
-        `值符：`,
-        `值使：`
-    ].join('\n');
-    
-    // 调用外部方法`
-    if (typeof renderCalendar === 'function') renderCalendar();
-    if (typeof updateQimen === 'function') updateQimen();
-  }
-
-  // --- 基础交互事件 ---
-  document.getElementById('dateShow').onclick = () => {
-    document.getElementById('overlay').classList.add('active');
-    document.body.style.overflow = 'hidden';
-  };
-
-  document.getElementById('overlay').onclick = (e) => {
-    if (e.target.id === 'overlay') {
-      e.target.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  };
-
-  document.getElementById('confirmTimeBtn').onclick = () => {
-    const timeVal = document.getElementById('timeInput').value;
-    const [h, m] = timeVal.split(':');
-    selectedDate.setHours(parseInt(h));
-    selectedDate.setMinutes(parseInt(m));
-    currentViewDate = new Date(selectedDate);
-    renderUI();
-    document.getElementById('overlay').classList.remove('active');
-    document.body.style.overflow = '';
-  };
-
-  document.getElementById('prevBtn').onclick = () => {
-    selectedDate.setHours(selectedDate.getHours() - 2);
-    currentViewDate = new Date(selectedDate);
-    renderUI();
-  };
-
-  document.getElementById('nextBtn').onclick = () => {
-    selectedDate.setHours(selectedDate.getHours() + 2);
-    currentViewDate = new Date(selectedDate);
-    renderUI();
-  };
-
-  document.getElementById('nowBtn').onclick = () => {
-    selectedDate = getGmt8Date();
-    currentViewDate = new Date(selectedDate);
-    renderUI();
-  };
-
-  // 初始化
-  renderUI();
-</script>
-
+<script src="main.js"></script>
+<script src="button.js"></script>
 <script src="calendar.js"></script>
 <script src="clipboard.js"></script>
-<script src="yinyang.js"></script>
 
 </body>
 </html>
