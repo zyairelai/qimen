@@ -16,25 +16,29 @@ function renderCalendar(view = 'days') {
     yearText.textContent = year;
 
     if (view === 'years') {
+        // --- 1. 年份选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(4, 1fr)'; 
         daysGrid.style.maxHeight = '250px';
         daysGrid.style.overflowY = 'auto';
 
-        for (let y = 1949; y <= 2060; y++) {
+        for (let y = 2021; y <= 2048; y++) {
             const yearEl = document.createElement('div');
             yearEl.className = 'picker-day' + (y === year ? ' selected' : '');
             yearEl.textContent = y;
             yearEl.onclick = (e) => {
                 e.stopPropagation();
                 currentViewDate.setFullYear(y);
+                // 【重点】选完年份，自动进入选月份界面
                 renderCalendar('months'); 
             };
             daysGrid.appendChild(yearEl);
             if (y === year) {
+                // 确保当前年份可见
                 setTimeout(() => yearEl.scrollIntoView({ block: 'center', behavior: 'smooth' }), 10);
             }
         }
     } else if (view === 'months') {
+        // --- 2. 月份选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
         daysGrid.style.overflowY = 'hidden';
         monthNames.forEach((name, index) => {
@@ -44,11 +48,13 @@ function renderCalendar(view = 'days') {
             monEl.onclick = (e) => {
                 e.stopPropagation();
                 currentViewDate.setMonth(index);
+                // 【重点】选完月份，回到日期界面
                 renderCalendar('days'); 
             };
             daysGrid.appendChild(monEl);
         });
     } else {
+        // --- 3. 日期选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
         daysGrid.style.overflowY = 'hidden';
         
@@ -87,51 +93,26 @@ function renderCalendar(view = 'days') {
 }
 
 window.addEventListener('load', () => {
+    // 监听整个标题栏的点击
     const titleEl = document.getElementById('monthYearTitle');
     if (titleEl) {
         titleEl.onclick = (e) => {
             e.stopPropagation();
-            renderCalendar('years');
+            renderCalendar('years'); // 从年份开始选
         };
     }
 
-    const prevMonth = document.getElementById('prevMonth');
-    if (prevMonth) {
-        prevMonth.onclick = (e) => {
-            e.stopPropagation();
-            currentViewDate.setMonth(currentViewDate.getMonth() - 1);
-            renderCalendar('days');
-        };
-    }
+    document.getElementById('prevMonth').onclick = (e) => {
+        e.stopPropagation();
+        currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+        renderCalendar('days');
+    };
 
-    const nextMonth = document.getElementById('nextMonth');
-    if (nextMonth) {
-        nextMonth.onclick = (e) => {
-            e.stopPropagation();
-            currentViewDate.setMonth(currentViewDate.getMonth() + 1);
-            renderCalendar('days');
-        };
-    }
-
-    const prevDayBtn = document.getElementById('prevDayBtn');
-    if (prevDayBtn) {
-        prevDayBtn.onclick = (e) => {
-            e.stopPropagation();
-            selectedDate.setDate(selectedDate.getDate() - 1);
-            if (typeof currentViewDate !== 'undefined') currentViewDate = new Date(selectedDate);
-            if (typeof renderUI === 'function') renderUI();
-        };
-    }
-
-    const nextDayBtn = document.getElementById('nextDayBtn');
-    if (nextDayBtn) {
-        nextDayBtn.onclick = (e) => {
-            e.stopPropagation();
-            selectedDate.setDate(selectedDate.getDate() + 1);
-            if (typeof currentViewDate !== 'undefined') currentViewDate = new Date(selectedDate);
-            if (typeof renderUI === 'function') renderUI();
-        };
-    }
+    document.getElementById('nextMonth').onclick = (e) => {
+        e.stopPropagation();
+        currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+        renderCalendar('days');
+    };
     
     renderCalendar();
 });
