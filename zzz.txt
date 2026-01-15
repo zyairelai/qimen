@@ -16,4 +16,4 @@
   ].join('\n');
 
 根据这个，我要弄个yinyang.js，根据奇门的逻辑，贴个阴阳x局，我要计算出来的，不要hardcode
-我用的是lunar-javascript/lunar.js，我要跟市面上专业排盘的一摸一样的
+我用的是lunar-javascript/lunar.js，我要跟市面上专业排盘的拆补法一摸一样的，我只是走普通js github page，不是nodejs
