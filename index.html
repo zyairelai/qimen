@@ -7,7 +7,6 @@
   
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
-  <script src="constants.js"></script>
 </head>
 <body>
 
@@ -19,34 +18,37 @@
     <button id="nowBtn">🕒</button>
     <button id="copyBtn">📋</button>
   </div>
-  <div class="lunar-info" id="lunarShow">获取农历中...</div>
+  <div class="lunar-info" id="lunarShow">LOADING...</div>
 </div>
 
 <div class="picker-overlay" id="overlay">
   <div class="custom-picker">
     <div class="picker-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-weight:bold;">
       <span style="padding:10px; cursor:pointer" id="prevMonth">◀</span>
-      <span id="monthYearTitle"></span>
+      <div id="monthYearTitle" style="display:flex; gap:10px; cursor:pointer;">
+        <span id="selectMonthText"></span> 
+        <span id="selectYearText"></span>
+      </div>
       <span style="padding:10px; cursor:pointer" id="nextMonth">▶</span>
     </div>
     <div class="picker-grid" id="daysGrid"></div>
     <div class="time-setter">
       <input type="time" id="timeInput" style="font-size:18px; padding:5px; border-radius:6px; border:1px solid #ddd;">
-      <button id="confirmTimeBtn" style="padding:8px 20px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold;">确定</button>
+      <button id="confirmTimeBtn" style="padding:8px 20px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold;">OK</button>
     </div>
   </div>
 </div>
 
 <div class="grid-container" id="qimenGrid">
-  <div class="grid-item"><div class="main-content"></div> <span class="position">巽四宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">离九宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">坤二宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">震三宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">中五宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">兑七宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">艮八宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">坎一宮</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">乾六宮</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">四</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">九</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">二</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">三</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">五</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">七</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">八</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">一</span></div>
+  <div class="grid-item"><div class="main-content"></div> <span class="position">六</span></div>
 </div>
 
 <script>
@@ -90,7 +92,7 @@
     const lunarMonth = lunar.getMonthInChinese();
     const lunarDay = lunar.getDayInChinese();
 
-    lunarShow.textContent = `农历：${lunarMonth}${lunarDay}\n${gzYear}年 ${gzMonth}月 ${gzDay}日 ${gzTime}时`;
+    lunarShow.textContent = `农历：${lunarMonth}月${lunarDay}\n${gzYear}年 ${gzMonth}月 ${gzDay}日 ${gzTime}时`;
 
     // 触发外部 calendar.js 的更新
     if (typeof renderCalendar === 'function') {
