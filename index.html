@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>风后奇门 - 农历版</title>
+  <title>风后奇门</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   
   <link rel="stylesheet" href="style.css">
@@ -50,17 +50,9 @@
 </div>
 
 <script>
-  // --- 状态管理 ---
+  // --- 全局状态管理 (供外部 JS 使用) ---
   let currentViewDate = getGmt8Date();
   let selectedDate = getGmt8Date();
-
-  // --- 元素引用 ---
-  const dateShow = document.getElementById('dateShow');
-  const lunarShow = document.getElementById('lunarShow');
-  const overlay = document.getElementById('overlay');
-  const daysGrid = document.getElementById('daysGrid');
-  const timeInput = document.getElementById('timeInput');
-  const monthYearTitle = document.getElementById('monthYearTitle');
 
   // --- 核心逻辑 ---
   function getGmt8Date() {
@@ -70,6 +62,10 @@
   }
 
   function renderUI() {
+    const dateShow = document.getElementById('dateShow');
+    const lunarShow = document.getElementById('lunarShow');
+    const timeInput = document.getElementById('timeInput');
+
     const y = selectedDate.getFullYear();
     const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const d = String(selectedDate.getDate()).padStart(2, '0');
@@ -81,8 +77,6 @@
 
     // 获取农历
     const lunar = Lunar.fromDate(selectedDate);
-    
-    // 处理子时换日逻辑
     let dayLunar = lunar;
     if (selectedDate.getHours() === 23) {
       const nextDay = new Date(selectedDate.getTime() + 3600000);
@@ -98,69 +92,36 @@
 
     lunarShow.textContent = `农历：${lunarMonth}${lunarDay}\n${gzYear}年 ${gzMonth}月 ${gzDay}日 ${gzTime}时`;
 
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    daysGrid.innerHTML = '';
-    const year = currentViewDate.getFullYear();
-    const month = currentViewDate.getMonth();
-    monthYearTitle.textContent = `${CONSTANTS.MONTH_NAMES[month]} ${year}`;
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-    
-    for (let i = 0; i < firstDay; i++) { 
-        daysGrid.appendChild(document.createElement('div')); 
+    // 触发外部 calendar.js 的更新
+    if (typeof renderCalendar === 'function') {
+        renderCalendar();
     }
     
-    for (let day = 1; day <= lastDate; day++) {
-      const dayEl = document.createElement('div');
-      const isSelected = day === selectedDate.getDate() && 
-                         month === selectedDate.getMonth() && 
-                         year === selectedDate.getFullYear();
-      
-      dayEl.className = 'picker-day' + (isSelected ? ' selected' : '');
-      dayEl.textContent = day;
-      dayEl.onclick = (e) => {
-        e.stopPropagation();
-        selectedDate.setFullYear(year);
-        selectedDate.setMonth(month);
-        selectedDate.setDate(day);
-        renderUI();
-      };
-      daysGrid.appendChild(dayEl);
-    }
+    // 预留给 qimen.js 的入口
+    // if (typeof updateQimen === 'function') updateQimen();
   }
 
-  function changeMonth(step) {
-    currentViewDate.setMonth(currentViewDate.getMonth() + step);
-    renderCalendar();
-  }
-
-  // --- 交互事件 ---
-  dateShow.onclick = () => {
-    overlay.classList.add('active');
+  // --- 基础交互事件 ---
+  document.getElementById('dateShow').onclick = () => {
+    document.getElementById('overlay').classList.add('active');
     document.body.style.overflow = 'hidden';
   };
 
-  overlay.onclick = (e) => {
-    if (e.target === overlay) {
-      overlay.classList.remove('active');
+  document.getElementById('overlay').onclick = (e) => {
+    if (e.target.id === 'overlay') {
+      e.target.classList.remove('active');
       document.body.style.overflow = '';
     }
   };
 
-  document.getElementById('prevMonth').onclick = () => changeMonth(-1);
-  document.getElementById('nextMonth').onclick = () => changeMonth(1);
-
   document.getElementById('confirmTimeBtn').onclick = () => {
-    const [h, m] = timeInput.value.split(':');
+    const timeVal = document.getElementById('timeInput').value;
+    const [h, m] = timeVal.split(':');
     selectedDate.setHours(parseInt(h));
     selectedDate.setMinutes(parseInt(m));
     currentViewDate = new Date(selectedDate);
     renderUI();
-    overlay.classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
     document.body.style.overflow = '';
   };
 
@@ -182,17 +143,12 @@
     renderUI();
   };
 
-  document.getElementById('copyBtn').onclick = function() {
-    const fullText = `${dateShow.textContent} (${lunarShow.textContent.replace('\n', ' ')})`;
-    navigator.clipboard.writeText(fullText);
-    const originalText = this.textContent;
-    this.textContent = '✅';
-    setTimeout(() => { this.textContent = originalText; }, 800);
-  };
-
   // 初始化启动
   renderUI();
 </script>
+
+<script src="calendar.js"></script>
+<script src="clipboard.js"></script>
 
 </body>
 </html>
