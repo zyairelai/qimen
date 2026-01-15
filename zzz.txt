@@ -1,26 +1,7 @@
-  const lunar = Lunar.fromDate(selectedDate);
-  let dayLunar = lunar;
-  if (selectedDate.getHours() === 23) {
-    const nextDay = new Date(selectedDate.getTime() + 3600000);
-    dayLunar = Lunar.fromDate(nextDay);
-  }
-
-  // OUTPUT FORMAT
-  const weekDay = selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' });
-  const yinyang = YinYangCalculator.calculateYinYang(lunar);
-  
-  lunarShow.textContent = [
-      `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
-      `农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
-      `干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时`,
-      `局数：${yinyang}`,
-      `旬首：`,
-      `值符：`,
-      `值使：`
-  ].join('\n');
 
 我在弄奇门遁甲，不是普通分阴阳干支
 先给我yinyang.js，我不要其他的什么局数，我只要分<阴阳遁>
 我要拆补法、转盘、自动选局，这个标准逻辑
 现在一步一步来，不要局数，旬首值符值使也不要，只要阴遁or阳遁
 如果要超级准确的，是需要hardcode前30年后30年的data吗？还是直接计算也行？
+能不能直接生成yinyang.js给我，其他的不要碰

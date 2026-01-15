@@ -15,8 +15,32 @@ function renderCalendar(view = 'days') {
     monthText.textContent = monthNames[month];
     yearText.textContent = year;
 
-    if (view === 'months') {
+    if (view === 'years') {
+        // --- 1. 年份选择视图 ---
+        daysGrid.style.gridTemplateColumns = 'repeat(4, 1fr)'; 
+        daysGrid.style.maxHeight = '250px';
+        daysGrid.style.overflowY = 'auto';
+
+        for (let y = 1949; y <= 2060; y++) {
+            const yearEl = document.createElement('div');
+            yearEl.className = 'picker-day' + (y === year ? ' selected' : '');
+            yearEl.textContent = y;
+            yearEl.onclick = (e) => {
+                e.stopPropagation();
+                currentViewDate.setFullYear(y);
+                // 【重点】选完年份，自动进入选月份界面
+                renderCalendar('months'); 
+            };
+            daysGrid.appendChild(yearEl);
+            if (y === year) {
+                // 确保当前年份可见
+                setTimeout(() => yearEl.scrollIntoView({ block: 'center', behavior: 'smooth' }), 10);
+            }
+        }
+    } else if (view === 'months') {
+        // --- 2. 月份选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        daysGrid.style.overflowY = 'hidden';
         monthNames.forEach((name, index) => {
             const monEl = document.createElement('div');
             monEl.className = 'picker-day' + (index === month ? ' selected' : '');
@@ -24,12 +48,15 @@ function renderCalendar(view = 'days') {
             monEl.onclick = (e) => {
                 e.stopPropagation();
                 currentViewDate.setMonth(index);
+                // 【重点】选完月份，回到日期界面
                 renderCalendar('days'); 
             };
             daysGrid.appendChild(monEl);
         });
     } else {
+        // --- 3. 日期选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        daysGrid.style.overflowY = 'hidden';
         
         const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         weekDays.forEach(day => {
@@ -66,19 +93,14 @@ function renderCalendar(view = 'days') {
 }
 
 window.addEventListener('load', () => {
-    document.getElementById('selectMonthText').onclick = (e) => {
-        e.stopPropagation();
-        renderCalendar('months');
-    };
-
-    document.getElementById('selectYearText').onclick = (e) => {
-        e.stopPropagation();
-        const newYear = prompt("Enter Year:", currentViewDate.getFullYear());
-        if (newYear && !isNaN(newYear)) {
-            currentViewDate.setFullYear(parseInt(newYear));
-            renderCalendar('days');
-        }
-    };
+    // 监听整个标题栏的点击
+    const titleEl = document.getElementById('monthYearTitle');
+    if (titleEl) {
+        titleEl.onclick = (e) => {
+            e.stopPropagation();
+            renderCalendar('years'); // 从年份开始选
+        };
+    }
 
     document.getElementById('prevMonth').onclick = (e) => {
         e.stopPropagation();

@@ -161,8 +161,14 @@ body {
 
 #monthYearTitle {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     cursor: pointer;
+    justify-content: flex-start;
+}
+
+#monthYearTitle span {
+    padding: 0;
+    margin-right: 1px;
 }
 
 #timeInput {
@@ -180,6 +186,12 @@ body {
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+}
+
+#daysGrid {
+    display: grid;
+    max-height: 280px; /* 这里的数值根据你的 UI 调整 */
+    overflow-y: auto;
 }
 
 .grid-container { 

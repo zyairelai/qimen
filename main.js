@@ -32,7 +32,7 @@ function renderUI() {
   }
 
   const weekDay = selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' });
-  const yinyang = YinYangCalculator.calculateYinYang(lunar);
+  const yinyang = YinYangCalculator.calculateYinYang(selectedDate);
   
   lunarShow.textContent = [
       `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
