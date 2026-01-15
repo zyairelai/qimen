@@ -1,12 +1,13 @@
 ## 因命风后演成文，遁甲奇门从此始。
 
-### Expected Structure
-rubbish  
-├── app.js  
-├── clipboard.js  
-├── index.html  
-├── qimen.js  
-├── README.md  
-├── regex.py  
-├── style.css  
-└── ui.js  
+### TO-DO
+- 阴遁阳遁
+- 局数
+- 旬首
+- 值符
+- 值使
+- 地盘干
+- 天盘干
+- 八门
+- 九星
+- 八神

@@ -1,4 +1,5 @@
-// --- 全局状态管理 ---
+// --- Main Logic ---
+ 
 let currentViewDate = getGmt8Date();
 let selectedDate = getGmt8Date();
 
@@ -22,7 +23,7 @@ function renderUI() {
   dateShow.textContent = `${y}-${m}-${d} ${h}:${min}`;
   timeInput.value = `${h}:${min}`;
 
-  // 获取农历与干支
+  // Get Lunar Date
   const lunar = Lunar.fromDate(selectedDate);
   let dayLunar = lunar;
   if (selectedDate.getHours() === 23) {
@@ -30,30 +31,21 @@ function renderUI() {
     dayLunar = Lunar.fromDate(nextDay);
   }
 
-  const gzYear = lunar.getYearInGanZhi();
-  const gzMonth = lunar.getMonthInGanZhi();
-  const gzDay = dayLunar.getDayInGanZhi(); 
-  const gzTime = lunar.getTimeInGanZhi();
-  const lunarMonth = lunar.getMonthInChinese();
-  const lunarDay = lunar.getDayInChinese();
-
-  // 输出格式修改 COPY TO CLIPBOARD
   const weekDay = selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' });
-  const yinyang = YinYangCalculator.calculateYinYang(gzYear, gzMonth, gzDay, gzTime);
+  const yinyang = YinYangCalculator.calculateYinYang(lunar);
   
   lunarShow.textContent = [
       `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
-      `农历：${selectedDate.getFullYear()}年${lunarMonth}月${lunarDay}`,
-      `干支：${gzYear}年 ${gzMonth}月 ${gzDay}日 ${gzTime}时`,
-      `局数：${yinyang} 旬首：`,
+      `农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
+      `干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时`,
+      `局数：${yinyang}`,
+      `旬首：`,
       `值符：`,
       `值使：`
   ].join('\n');
-  
-  // 调用外部方法
+
   if (typeof renderCalendar === 'function') renderCalendar();
   if (typeof updateQimen === 'function') updateQimen();
 }
 
-// 初始化
 renderUI();

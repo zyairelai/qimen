@@ -1,3 +1,5 @@
+// --- Calendar Picker ---
+
 function renderCalendar(view = 'days') {
     const daysGrid = document.getElementById('daysGrid');
     const monthText = document.getElementById('selectMonthText');

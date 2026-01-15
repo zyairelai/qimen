@@ -1,3 +1,5 @@
+// --- Clipboard Copy Handler ---
+
 window.addEventListener('load', () => {
     const copyBtn = document.getElementById('copyBtn');
     if (!copyBtn) return;
