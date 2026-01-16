@@ -8,7 +8,14 @@ const BamenCalculator = {
     calculateDoors: function(zhiShiDoorName, targetPalaceNum) {
         // 初始化空结果，防止报错导致弹窗不显示
         let result = { 1:"", 2:"", 3:"", 4:"", 5:"", 6:"", 7:"", 8:"", 9:"" };
-        
+        let targetPalace = parseInt(targetPalaceNum);
+
+        if (isNaN(targetPalace)) {
+            // 如果外部没传数字，这里给个兜底，防止整个程序崩溃
+            console.warn("警告：BamenCalculator 未收到有效的落宫数字，使用默认值 1");
+            targetPalace = 1; 
+        }
+
         try {
             // 1. 处理门名称：确保是“惊门”这种格式
             let doorName = (zhiShiDoorName || "");
