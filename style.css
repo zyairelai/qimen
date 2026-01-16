@@ -83,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 55px;
+    padding-left: 1px;
     text-align: left;
 }
 
@@ -249,4 +249,34 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #1e293b;
+}
+
+.grid-item .stars {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.grid-item .bashen {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 25px;
+    font-size: 16px;
+    color: #ef4444;
+}
+
+.grid-item .bamen {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%);
+    margin-top: 25px;
+    font-size: 16px;
+    color: #2563eb;
 }
