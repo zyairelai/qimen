@@ -17,7 +17,7 @@ const ELEMENT_MAPPING = {
     "玄武": "水", "九地": "土", "九天": "金", "勾陈": "土", "朱雀": "火"
 };
 
-function getColor(name) {
+function getCommonColor(name) {
     if (!name) return "#64748b";
     
     // 移除可能的空格和特殊字符（如“芮/禽”中的斜杠）
