@@ -18,19 +18,34 @@ function updateQimen() {
     const lunar = Lunar.fromDate(selectedDate);
     const jushu = JieQiCalculator.calculateJuShu(selectedDate);
     
-    // 1. 提取日干：例如“己亥日”提取“己”
-    const riGanZhi = lunar.getDayInGanZhi(); 
-    const riGan = riGanZhi.charAt(0);        
+    // 1. 处理日干：如果是甲日，自动遁至六仪
+    const riGanZhi = lunar.getDayInGanZhi(); // 如 "甲午"
+    const riGan = riGanZhi.charAt(0);        // 如 "甲"
     
+    let riGanReal = riGan;
+    if (riGan === "甲") {
+        const liuYiMap = {
+            "甲子": "戊", "甲戌": "己", "甲申": "庚", 
+            "甲午": "辛", "甲辰": "壬", "甲寅": "癸"
+        };
+        // 取得日柱对应的六仪，例如“甲午”对应“辛”
+        riGanReal = liuYiMap[riGanZhi] || riGan;
+    }
+
+    // 2. 处理时干与旬首（用于确定值符值使）
     const shiGanZhi = lunar.getTimeInGanZhi();
     const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
-    
     if (!xunResult) return;
     
-    const diPanGans = getDiPan(jushu) || {};
     const shiGan = shiGanZhi.charAt(0);
+    const diPanGans = getDiPan(jushu) || {};
 
-    // 计算逻辑
+    // 3. 计算天盘、值符、值使等基础数据
+    const tianPanGans = TianPanCalculator.calculateTianPan(jushu, shiGan, xunResult.liuYi) || {};
+    const zhiFuInfo = ZhiFuCalculator.getZhiFu(jushu, xunResult.liuYi, shiGan) || {};
+    const zhiShiInfo = ZhiShiCalculator.getZhiShi(jushu, xunResult.name, xunResult.liuYi, shiGanZhi.charAt(1)) || {};
+
+    // 4. 定位目标宫位（以时干为参考计算星神，这是你原有的 targetPalace 逻辑）
     let searchGan = (shiGan === "甲") ? xunResult.liuYi : shiGan;
     let targetPalace = 1; 
     for (let i = 1; i <= 9; i++) {
@@ -40,14 +55,11 @@ function updateQimen() {
         }
     }
 
-    const tianPanGans = TianPanCalculator.calculateTianPan(jushu, shiGan, xunResult.liuYi) || {};
-    const zhiFuInfo = ZhiFuCalculator.getZhiFu(jushu, xunResult.liuYi, shiGan) || {};
-    const zhiShiInfo = ZhiShiCalculator.getZhiShi(jushu, xunResult.name, xunResult.liuYi, shiGanZhi.charAt(1)) || {};
-
     const stars = StarsCalculator.calculateStars(zhiFuInfo.star, targetPalace) || {};
     const shens = BashenCalculator.calculateShen(jushu, targetPalace) || {};
     const doors = BamenCalculator.calculateDoors(zhiShiInfo.door, zhiShiInfo.targetPalace) || {};
 
+    // 5. 渲染九宫格
     const gongToIdx = { 4: 0, 9: 1, 2: 2, 3: 3, 5: 4, 7: 5, 8: 6, 1: 7, 6: 8 };
     const gridItems = document.querySelectorAll('.grid-item');
 
@@ -59,17 +71,19 @@ function updateQimen() {
         const tianGan = tianPanGans[gong] || "";
         const diGan = diPanGans[gong] || "";
 
-        // --- 核心修改：判断天盘干是否为日干 ---
-        // 排除中五宫（通常不直接在高亮逻辑中处理，或者根据你的习惯而定）
-        if (tianGan === riGan && gong !== 5) {
+        // --- 核心高亮逻辑重写 ---
+        // 只要天盘干等于我们算出的“真日干”，且不是中宫，就高亮
+        if (tianGan === riGanReal && gong !== 5) {
             item.style.backgroundColor = "#FEF3C7"; // 琥珀金
+            item.style.border = "2px solid #F59E0B"; // 增加边框强调
         } else {
-            item.style.backgroundColor = ""; // 恢复默认
+            item.style.backgroundColor = ""; 
+            item.style.border = "";
         }
 
-        // --- 中五宫特殊清空逻辑 ---
+        // --- 中五宫特殊处理 ---
         if (gong === 5) {
-            item.style.backgroundColor = ""; // 中宫一般保持原样
+            item.style.backgroundColor = ""; 
             renderSpan(item, '.shen', "");
             renderSpan(item, '.star', "");
             renderSpan(item, '.door', "");
@@ -80,7 +94,7 @@ function updateQimen() {
             continue;
         }
 
-        // --- 通用渲染 ---
+        // --- 通用内容渲染 ---
         renderSpan(item, '.shen', shens[gong] || "", (el) => {
             el.style.color = typeof getCommonColor === 'function' ? getCommonColor(shens[gong]) : ""; 
         });

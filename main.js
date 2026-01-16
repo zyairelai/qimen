@@ -46,21 +46,32 @@ function renderUI() {
   const zhiFuResult = ZhiFuCalculator.getZhiFu(jushu, xunLiuYi, shiGan);
   const zhifu = zhiFuResult ? zhiFuResult.fullTitle : "未知";
 
- // 计算值使
+  // 计算值使
   const shiZhi = shiGanZhi.substring(1, 2); 
   const xunName = xunResult ? xunResult.name : ""; 
   const zhishi = ZhiShiCalculator.getZhiShi(jushu, xunName, xunLiuYi, shiZhi);
 
+  // 计算驿马
+  const dayZhi = dayLunar.getDayInGanZhi().substring(1, 2); 
+  const yimaInfo = YiMaCalculator.getYiMa(dayZhi);
+
+  // 计算空亡
+  const xunNameOnly = xunResult ? xunResult.name : ""; 
+  const kwInfos = KongWangCalculator.getKongWang(xunNameOnly);
+
+  // Debugging
   const aiText = QimenAI.getFormattedPan();
 
-  lunarShow.textContent = [
-      `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
-      `农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
-      `干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时`,
-      `局数：${jushu}\u3000旬首：${xunshou}`, // Expected Output 局数：阳遁5局　旬首：甲申(庚)
-      `值符：${zhifu}`, // Expected Output 值符：天禽落震三宮
-      `值使：${zhishi.fullTitle}` // Expected Output 值使：死門落坎一宮
-  ].join('\n');
+  const output = `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}
+  农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}
+  干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时
+  局数：${jushu}\u3000旬首：${xunshou}
+  值符：${zhifu}
+  值使：${zhishi.fullTitle}
+  驿马：${yimaInfo.zhi}落${yimaInfo.gong}
+  空亡：${kwInfos.map(k => k.zhi).join('')}落${[...new Set(kwInfos.map(k => k.gong))].join('/')}`;
+
+  lunarShow.textContent = output;
 
   if (typeof renderCalendar === 'function') renderCalendar();
   if (typeof updateQimen === 'function') updateQimen();
