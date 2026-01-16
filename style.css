@@ -270,8 +270,8 @@ html, body {
 .grid-item .dipan-gan {
     position: absolute;
     right: 8px;
-    bottom: 18%; /* 确保在地盘文字上方 */
-    font-size: 18px;
+    bottom: 10%; /* 确保在地盘文字上方 */
+    font-size: 20px;
     font-weight: bold;
     line-height: 1;
 }
@@ -280,8 +280,8 @@ html, body {
 .grid-item .tianpan-gan {
     position: absolute;
     right: 8px;
-    bottom: 45%; /* 调整这个百分比来控制天干之间的间距 */
-    font-size: 18px;
+    bottom: 30%; /* 调整这个百分比来控制天干之间的间距 */
+    font-size: 20px;
     font-weight: bold;
     line-height: 1;
 }
