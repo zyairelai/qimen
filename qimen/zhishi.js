@@ -48,7 +48,11 @@ const ZhiShiCalculator = {
             fullTitle = `${doorName}落${palaceNames[targetPalace]}宫`;
         }
 
-        return { door: doorName, fullTitle: fullTitle };
+        return { 
+            door: doorName, 
+            fullTitle: fullTitle, 
+            targetPalace: targetPalace // 新增这一行，直接返回数字
+        };
     }
 };
 

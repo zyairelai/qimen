@@ -1,25 +1,39 @@
+/**
+ * ui.js - 负责奇门遁甲界面的渲染
+ */
 function updateQimen() {
-    // 1. 获取当前必要的日期和干支数据
-    // 假设 selectedDate 是全局变量，重新生成 lunar 对象以防作用域报错
-    const lunar = Lunar.fromDate(selectedDate); 
+    // 1. 基础数据获取
+    if (typeof selectedDate === 'undefined') return;
+    
+    const lunar = Lunar.fromDate(selectedDate);
     const jushu = JieQiCalculator.calculateJuShu(selectedDate);
     const shiGanZhi = lunar.getTimeInGanZhi();
-    const shiGan = shiGanZhi.charAt(0); // 提取时干，如 "丙"
-    
+    const shiGan = shiGanZhi.charAt(0);
+    const shiZhi = shiGanZhi.charAt(1);
+
     // 2. 获取旬首信息
     const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
-    if (!xunResult) {
-        console.error("无法获取旬首数据");
-        return;
-    }
-    const xunShouLiuYi = xunResult.liuYi; // 提取六仪，如 "庚"
+    if (!xunResult) return;
+    
+    // 统一变量名
+    const xunName = xunResult.name; 
+    const xunLiuYi = xunResult.liuYi; 
 
-    // 3. 计算地盘和天盘数据
+    // 3. 计算各层级数据
     const diPanGans = getDiPan(jushu);
-    // 调用我们之前在 tianpan.js 定义的计算工具
-    const tianPanGans = TianPanCalculator.calculateTianPan(jushu, shiGan, xunShouLiuYi);
+    // 修复点：确保这里传入的是 xunLiuYi
+    const tianPanGans = TianPanCalculator.calculateTianPan(jushu, shiGan, xunLiuYi);
+    
+    const zhiFuInfo = ZhiFuCalculator.getZhiFu(jushu, xunLiuYi, shiGan);
+    const zhiShiInfo = ZhiShiCalculator.getZhiShi(jushu, xunName, xunLiuYi, shiZhi);
 
-    // 4. 定义宫位对应关系
+    // 计算星、门、神分布
+    // 这里的 palaceNum 是我们在 zhifu.js 和 zhishi.js 中添加的返回属性
+    const stars = StarsCalculator.calculateStars(zhiFuInfo.star, zhiFuInfo.palaceNum);
+    const doors = BamenCalculator.calculateDoors(zhiShiInfo.door, zhiShiInfo.palaceNum);
+    const shens = BashenCalculator.calculateShen(jushu, zhiFuInfo.palaceNum);
+
+    // 4. 宫位对应索引 (HTML Grid 顺序通常是左上到右下)
     const gongToIdx = {
         4: 0, 9: 1, 2: 2,
         3: 3, 5: 4, 7: 5,
@@ -28,38 +42,56 @@ function updateQimen() {
 
     const gridItems = document.querySelectorAll('.grid-item');
 
-    // 5. 循环渲染每一个宫位
-    for (let gong = 1; gong <= 9; gong++) {
-        const idx = gongToIdx[gong];
-        const item = gridItems[idx];
-        if (!item) continue;
+    // 5. 渲染每一个宫位
+    // 修改 ui.js 中的渲染循环部分
+for (let gong = 1; gong <= 9; gong++) {
+    const idx = gongToIdx[gong];
+    const item = gridItems[idx];
+    if (!item) continue;
 
-        // --- 渲染地盘天干 ---
-        const diGan = diPanGans[gong];
-        let diPanSpan = item.querySelector('.dipan-gan');
-        if (!diPanSpan) {
-            diPanSpan = document.createElement('span');
-            diPanSpan.className = 'dipan-gan';
-            item.appendChild(diPanSpan);
-        }
-        diPanSpan.textContent = diGan;
-        diPanSpan.style.color = typeof getGanColor === 'function' ? getGanColor(diGan) : '#333';
+    // 清空旧内容，或者确保你的 HTML 里已经写好了这些 span
+    // 建议直接在 HTML 里写好固定结构，JS 只改 textContent
+    
+    // 八神
+    const shenText = shens[gong] || "";
+    renderSpan(item, '.shen', shenText, (el) => {
+        el.style.color = getShenColor(shenText); // 建议专门写个八神颜色函数
+    });
 
-        // --- 渲染天盘天干 ---
-        const tianGan = tianPanGans[gong];
-        let tianPanSpan = item.querySelector('.tianpan-gan');
-        if (!tianPanSpan) {
-            tianPanSpan = document.createElement('span');
-            tianPanSpan.className = 'tianpan-gan';
-            item.appendChild(tianPanSpan);
-        }
-        
-        // 渲染逻辑：如果是中5宫，通常不显示天盘干（已寄往2宫）
-        if (gong === 5) {
-            tianPanSpan.textContent = "";
-        } else {
-            tianPanSpan.textContent = tianGan;
-            tianPanSpan.style.color = typeof getGanColor === 'function' ? getGanColor(tianGan) : '#ff4444';
-        }
+    // 九星
+    const starText = stars[gong] || "";
+    renderSpan(item, '.star', starText, (el) => {
+        el.style.color = "#333"; 
+    });
+
+    // 八门 - 关键修复：确保 doors[gong] 有值
+    const doorText = doors[gong] || "";
+    renderSpan(item, '.door', doorText, (el) => {
+        el.style.color = getDoorColor(doorText); 
+    });
+
+    // 天盘与地盘
+    const tianGan = (gong === 5) ? "" : (tianPanGans[gong] || "");
+    const diGan = diPanGans[gong] || "";
+    
+    renderSpan(item, '.tianpan-gan', tianGan);
+    renderSpan(item, '.dipan-gan', diGan);
+    };
     }
+
+/**
+ * 辅助渲染函数：确保元素存在并更新内容
+ */
+function renderSpan(parent, className, text, callback = null) {
+    let el = parent.querySelector(className);
+    if (!el) {
+        el = document.createElement('span');
+        el.className = className.replace('.', '');
+        parent.appendChild(el);
+    }
+    el.textContent = text || "";
+    if (callback) callback(el);
 }
+
+// 导出到全局
+window.updateQimen = updateQimen;
