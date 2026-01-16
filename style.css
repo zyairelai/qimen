@@ -194,93 +194,104 @@ body {
     overflow-y: auto;
 }
 
+/* --- Webview --- */
+
+/* 基础重置 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f8fafc;
+}
+
 .grid-container { 
     margin: 10px auto; 
     width: 95vw; 
     max-width: 500px; 
-    /* 核心修复：确保在 WebView 中有高度 */
     aspect-ratio: 1 / 1; 
     display: grid; 
     grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: repeat(3, 1fr); 
     gap: 2px; 
-    background: #475569; /* 直接使用颜色，防止变量失效 */
+    background: #475569; 
     border: 3px solid #475569; 
     box-sizing: border-box;
 }
 
 .grid-item { 
     background: #ffffff; 
-    display: flex; 
-    flex-direction: column; 
     position: relative; 
     box-sizing: border-box;
     overflow: hidden;
 }
 
-/* 宫位名称 (如：巽四宫) */
+/* 1. 宫位名称：固定在最底部 */
 .grid-item .position { 
     position: absolute; 
-    bottom: 4px; 
+    bottom: 2px; 
     left: 50%; 
     transform: translateX(-50%); 
     font-size: 11px; 
     color: #94a3b8; 
     white-space: nowrap; 
-    z-index: 1;
 }
 
-/* 八神 (最上方) */
+/* 2. 中轴线三元素：神、星、门 垂直均匀对齐 */
 .grid-item .shen {
     position: absolute;
-    top: 5px;
+    top: 8%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
 }
 
-/* 九星 (中间偏上) */
 .grid-item .star {
     position: absolute;
-    top: 30%;
+    top: 33%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
+    transform: translateX(-50%);
+    font-size: 26px;
     font-weight: 700;
 }
 
-/* 八门 (正中间或偏下) */
 .grid-item .door {
     position: absolute;
-    top: 55%;
+    top: 58%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
+    transform: translateX(-50%);
+    font-size: 26px;
     font-weight: 700;
 }
 
-/* 天盘干 (右侧偏上) */
-.grid-item .tianpan-gan {
-    position: absolute;
-    right: 6px;
-    top: 30%;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* 地盘干 (右侧偏下) */
+/* 3. 右侧天干：天盘干压在地盘干正上方 */
+/* 地盘干：固定在右下角，稍微避开最底部的宫位文字 */
 .grid-item .dipan-gan {
     position: absolute;
-    right: 6px;
-    bottom: 20%;
+    right: 8px;
+    bottom: 18%; /* 确保在地盘文字上方 */
     font-size: 18px;
     font-weight: bold;
+    line-height: 1;
 }
 
-/* 针对移动端 WebView 的字体微调 */
+/* 天盘干：精准对齐在地盘干上方 */
+.grid-item .tianpan-gan {
+    position: absolute;
+    right: 8px;
+    bottom: 45%; /* 调整这个百分比来控制天干之间的间距 */
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* 特殊处理：如果有寄宫（如禽芮同宫），建议在 HTML 里给这两个字包一个 span 换行 */
+
+/* 针对小屏幕手机微调 */
 @media (max-width: 380px) {
-    .grid-item .star, .grid-item .door { font-size: 20px; }
+    .grid-item .star, .grid-item .door { font-size: 22px; }
     .grid-item .shen { font-size: 18px; }
     .grid-item .tianpan-gan, .grid-item .dipan-gan { font-size: 16px; }
+    .grid-item .position { font-size: 9px; }
 }
