@@ -17,6 +17,11 @@ function updateQimen() {
     
     const lunar = Lunar.fromDate(selectedDate);
     const jushu = JieQiCalculator.calculateJuShu(selectedDate);
+    
+    // 1. 提取日干：例如“己亥日”提取“己”
+    const riGanZhi = lunar.getDayInGanZhi(); 
+    const riGan = riGanZhi.charAt(0);        
+    
     const shiGanZhi = lunar.getTimeInGanZhi();
     const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
     
@@ -25,7 +30,7 @@ function updateQimen() {
     const diPanGans = getDiPan(jushu) || {};
     const shiGan = shiGanZhi.charAt(0);
 
-    // 计算逻辑保持与你的 QimenAI 一致
+    // 计算逻辑
     let searchGan = (shiGan === "甲") ? xunResult.liuYi : shiGan;
     let targetPalace = 1; 
     for (let i = 1; i <= 9; i++) {
@@ -51,50 +56,51 @@ function updateQimen() {
         const item = gridItems[idx];
         if (!item) continue;
 
-        // --- 核心修复：如果是中五宫，清空不需要的内容 ---
+        const tianGan = tianPanGans[gong] || "";
+        const diGan = diPanGans[gong] || "";
+
+        // --- 核心修改：判断天盘干是否为日干 ---
+        // 排除中五宫（通常不直接在高亮逻辑中处理，或者根据你的习惯而定）
+        if (tianGan === riGan && gong !== 5) {
+            item.style.backgroundColor = "#FEF3C7"; // 琥珀金
+        } else {
+            item.style.backgroundColor = ""; // 恢复默认
+        }
+
+        // --- 中五宫特殊清空逻辑 ---
         if (gong === 5) {
+            item.style.backgroundColor = ""; // 中宫一般保持原样
             renderSpan(item, '.shen', "");
             renderSpan(item, '.star', "");
             renderSpan(item, '.door', "");
-            renderSpan(item, '.tianpan-gan', ""); // 清除中五宫的天盘癸
-            // 地盘干保留（通常中五宫只留底部的“戊”）
-            const diGan = diPanGans[gong] || "戊";
+            renderSpan(item, '.tianpan-gan', "");
             renderSpan(item, '.dipan-gan', diGan, (el) => {
                 el.style.color = typeof getCommonColor === 'function' ? getCommonColor(diGan) : "#795548";
             });
-            continue; // 跳过本次循环，不执行下方的通用渲染
+            continue;
         }
 
-        // --- 通用宫位渲染 (1-4, 6-9宫) ---
-        // 渲染八神
-        const shenText = shens[gong] || "";
-        renderSpan(item, '.shen', shenText, (el) => {
-            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(shenText) : "#000"; 
+        // --- 通用渲染 ---
+        renderSpan(item, '.shen', shens[gong] || "", (el) => {
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(shens[gong]) : ""; 
         });
-
-        // 渲染九星
+        
         let starText = stars[gong] || "";
         if (starText.includes("芮")) starText = "禽芮"; 
         renderSpan(item, '.star', starText, (el) => {
-            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(starText) : "#000";
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(starText) : "";
         });
 
-        // 渲染八门
-        const doorText = doors[gong] || "";
-        renderSpan(item, '.door', doorText, (el) => {
-            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(doorText) : "#000"; 
+        renderSpan(item, '.door', doors[gong] || "", (el) => {
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(doors[gong]) : ""; 
         });
 
-        // 渲染天干/地盘
-        const tianGan = tianPanGans[gong] || "";
-        const diGan = diPanGans[gong] || "";
-        
         renderSpan(item, '.tianpan-gan', tianGan, (el) => {
-            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(tianGan) : "#000";
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(tianGan) : "";
         });
         
         renderSpan(item, '.dipan-gan', diGan, (el) => {
-            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(diGan) : "#000";
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(diGan) : "";
         });
     }
 }
