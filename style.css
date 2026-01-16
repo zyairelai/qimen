@@ -233,7 +233,6 @@ body {
     color: #1e293b; 
 }
 
-/* 地盘干的样式 */
 .grid-item .dipan-gan {
     position: absolute;
     right: 10px;
@@ -241,4 +240,13 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #64748b;
+}
+
+.grid-item .tianpan-gan {
+    position: absolute;
+    right: 10px;
+    bottom: 50px; 
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
 }
