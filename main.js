@@ -31,14 +31,36 @@ function renderUI() {
     dayLunar = Lunar.fromDate(nextDay);
   }
 
+  // 计算局数
   const weekDay = selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' });
-  const yinyang = YinYangCalculator.calculateYinYang(selectedDate)
+  const jushu = JieQiCalculator.calculateJuShu(selectedDate);
+
+  // 计算旬首
+  const shiGanZhi = lunar.getTimeInGanZhi();
+  const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
+  const xunshou = xunResult ? `${xunResult.name}(${xunResult.liuYi})` : "未知";
+
+  // 计算值符值使
+  let zhifu = "未知";
+  let zhishi = "未知";
+  if (xunResult) {
+      // 提取纯净的六仪干，例如从 "甲戌(己)" 中提取 "己"
+      const liuYiMatch = xunResult.liuYi.match(/\((.+?)\)/);
+      if (liuYiMatch) {
+          const liuYiGan = liuYiMatch[1]; 
+          const result = ZhiFuZhiShiCalculator.calculate(jushu, xunResult.name, liuYiGan, shiGanZhi);
+          zhifu = result.zhifu;   // 输出：天禽落震三宮
+          zhishi = result.zhishi; // 输出：死門落坎一宮
+      }
+  }
 
   lunarShow.textContent = [
       `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
       `农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
       `干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时`,
-      `局数：${yinyang}`
+      `局数：${jushu}\u3000旬首：${xunshou}`,
+      `值符：${zhifu}`,
+      `值使：${zhishi}`,
   ].join('\n');
 
   if (typeof renderCalendar === 'function') renderCalendar();

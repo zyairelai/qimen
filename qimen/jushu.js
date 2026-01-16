@@ -1,4 +1,4 @@
-const YinYangCalculator = (function() {
+const JieQiCalculator = (function() {
     const JIEQI_ORDER = [
         '小寒', '大寒', '立春', '雨水', '惊蛰', '春分',
         '清明', '谷雨', '立夏', '小满', '芒种', '夏至',
@@ -26,7 +26,7 @@ const YinYangCalculator = (function() {
          * 计算奇门遁甲局数（拆补法）
          * @param {Date} date 标准 JS Date 对象
          */
-        calculateYinYang: function(date) {
+        calculateJuShu: function(date) {
             if (typeof Lunar === 'undefined') {
                 console.error("未检测到 lunar-javascript 库，请先引入。");
                 return "需加载Lunar库";
