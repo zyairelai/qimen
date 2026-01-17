@@ -5,27 +5,22 @@ const QimenAI = {
         8: "艮八", 1: "坎一", 6: "乾六"
     },
 
-    /**
-     * 获取格式化的文本输出
-     * 顺序：天干组合，神，星，门
-     */
     getFormattedPan: function() {
         const data = this.getPanObject();
-        if (typeof data === 'string') return data; // 返回错误信息
+        if (typeof data === 'string') return data;
 
         return data.map(p => {
-            let line = `${p.palaceName}：${p.ganCombined}，${p.shen}，${p.star}，${p.door}`;
-            if (p.isRuiPalace) {
-                line += `（寄${p.jiGan}、${p.jiStar}）`;
+            // New Format: Palace: Gan, Star, Door, Shen
+            let line = `${p.palaceName}：${p.ganCombined}，${p.star}，${p.door}，${p.shen}`;
+            
+            // Append JiGan (Hidden Stem) for the Rui/Qin palace if it exists
+            if (p.isRuiPalace && p.jiGan) {
+                line += `（寄${p.jiGan}）`;
             }
             return line;
         }).join('\n');
     },
 
-    /**
-     * 获取结构化的数据对象
-     * 方便直接提取 data 字段
-     */
     getPanObject: function() {
         if (typeof selectedDate === 'undefined') return "请先选择日期";
 
@@ -58,7 +53,6 @@ const QimenAI = {
 
         const zhongWuGan = diPanGans[5] || "戊"; 
 
-        // 确定天芮星位置
         let ruiPalace = 2; 
         for (let i = 1; i <= 9; i++) {
             if ((stars[i] || "").includes("芮")) {
@@ -80,11 +74,10 @@ const QimenAI = {
                 palaceName: this.palaceNames[gong],
                 ganCombined: (tianGan && diGan) ? `${tianGan}+${diGan}` : (tianGan || diGan),
                 shen: shens[gong] || "",
-                star: isRui ? "天芮" : rawStar,
+                star: isRui ? "禽芮" : rawStar, 
                 door: doors[gong] || "",
                 isRuiPalace: gong === ruiPalace,
-                jiGan: (gong === ruiPalace) ? zhongWuGan : null,
-                jiStar: (gong === ruiPalace) ? "天禽" : null
+                jiGan: (gong === ruiPalace) ? zhongWuGan : null
             };
         });
     }
