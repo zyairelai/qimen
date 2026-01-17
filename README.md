@@ -1,4 +1,2 @@
 ## 因命风后演成文，遁甲奇门从此始。
-
-### TO-DO
-- 中五宫寄天干（出bug）
+https://zyairelai.github.io/qimen/

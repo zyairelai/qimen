@@ -37,7 +37,7 @@ html, body {
     bottom: 4px; /* 稍微提升一点，防止贴边 */
     left: 50%; 
     transform: translateX(-50%); 
-    font-size: 20px; 
+    font-size: 18px; 
     color: #94a3b8; 
     white-space: nowrap; 
     z-index: 1;
@@ -55,20 +55,20 @@ html, body {
 
 .grid-item .shen {
     top: 10%;
-    font-size: 25px;
-    font-weight: 800;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .grid-item .star {
     top: 32%;
-    font-size: 30px;
-    font-weight: 600;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 .grid-item .door {
     top: 56%;
-    font-size: 30px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 /* 寄天干 (左侧) 与 天盘干 (右侧) */
