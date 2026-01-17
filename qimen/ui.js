@@ -13,8 +13,8 @@ function applyCustomUnderline(el, isActive) {
     if (isActive) {
         el.style.textDecoration = "underline";
         el.style.textDecorationColor = "currentColor";
-        el.style.textDecorationThickness = "2.5px";
-        el.style.textUnderlineOffset = "3px";
+        el.style.textDecorationThickness = "3px";
+        el.style.textUnderlineOffset = "5px";
     } else {
         el.style.textDecoration = "none";
     }
