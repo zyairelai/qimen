@@ -37,7 +37,7 @@ html, body {
     bottom: 4px; /* 稍微提升一点，防止贴边 */
     left: 50%; 
     transform: translateX(-50%); 
-    font-size: 18px; 
+    font-size: 20px; 
     color: #94a3b8; 
     white-space: nowrap; 
     z-index: 1;
@@ -55,19 +55,19 @@ html, body {
 
 .grid-item .shen {
     top: 10%;
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 800;
 }
 
 .grid-item .star {
     top: 32%;
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 600;
 }
 
 .grid-item .door {
     top: 56%;
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
 }
 
