@@ -38,7 +38,8 @@ function renderUI() {
   // 计算旬首
   const shiGanZhi = lunar.getTimeInGanZhi();
   const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
-  const xunshou = xunResult ? `${xunResult.name}（${xunResult.liuYi}）` : "未知";
+  const xunshou = xunResult ? `${xunResult.name}${xunResult.liuYi}` : "未知";
+  // const xunshou = xunResult ? `${xunResult.name}（${xunResult.liuYi}）` : "未知";
 
   // 计算值符
   const xunLiuYi = xunResult ? xunResult.liuYi : "";
