@@ -65,7 +65,7 @@ function updateQimen() {
         const diPanGans = getDiPan(jushu) || {};
         ['.shen', '.star', '.door', '.tianpan-gan', '.ji-gan'].forEach(cls => renderSpan(midItem, cls, ""));
         renderSpan(midItem, '.dipan-gan', diPanGans[5] || "戊", el => {
-            el.style.color = "#795548";
+            el.style.color = typeof getCommonColor === 'function' ? getCommonColor(diPanGans[5]) : "#795548";
             applyShiGanBox(el, diPanGans[5], searchShiGan);
             applyCustomUnderline(el, false); // 中宫通常不加下划线
         });
