@@ -1,122 +1,129 @@
-/* --- Webview 兼容修复版 (移除所有新技术，改用最稳方案) --- */
-
-/* 基础重置 */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     background-color: #f8fafc;
-    -webkit-text-size-adjust: 100%;
+    /* 增加：防止手机端字体自动放大 */
+    -webkit-text-size-adjust: 100%; 
 }
 
 .grid-container { 
     margin: 10px auto; 
-    width: 95%; 
+    width: 95vw; 
     max-width: 500px; 
-    /* 解决旧版 WebView 不支持 aspect-ratio 的问题 */
-    height: 95vw; 
-    max-height: 500px;
-    display: block; /* 改用 block 配合 float 或绝对定位的兼容性更好 */
-    position: relative;
+    aspect-ratio: 1 / 1; 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr); 
+    gap: 2px; 
     background: #475569; 
     border: 3px solid #475569; 
     box-sizing: border-box;
 }
 
-/* 强制让格子变成 3x3 */
 .grid-item { 
-    float: left;
-    width: 33.33%;
-    height: 33.33%;
     background: #ffffff; 
     position: relative; 
     box-sizing: border-box;
-    border: 1px solid #475569; /* 模拟 gap */
     overflow: hidden;
+    /* 增加：强制统一行高，防止在不同设备上偏移 */
+    line-height: 1.2; 
 }
 
-/* 1. 宫位名称：使用 px 保证最起码的清晰度 */
+/* 1. 宫位名称 */
 .grid-item .position { 
     position: absolute; 
-    bottom: 2px; 
-    width: 100%;
-    left: 0;
-    text-align: center;
-    font-size: 12px; 
+    bottom: 4px; /* 稍微提升一点，防止贴边 */
+    left: 50%; 
+    transform: translateX(-50%); 
+    font-size: 18px; 
     color: #94a3b8; 
     white-space: nowrap; 
+    z-index: 1;
 }
 
-/* 2. 中轴线三元素：使用百分比高度定位 */
-.grid-item .shen {
+/* 2. 中轴线三元素：神、星、门 */
+/* 增加统一的 class 处理中轴对齐 */
+.grid-item .shen, .grid-item .star, .grid-item .door {
     position: absolute;
-    top: 8%;
-    width: 100%;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
-    font-size: 18px;
+    width: 100%;
+}
+
+.grid-item .shen {
+    top: 10%;
+    font-size: 22px;
     font-weight: 800;
 }
 
 .grid-item .star {
-    position: absolute;
     top: 32%;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 600;
 }
 
 .grid-item .door {
-    position: absolute;
     top: 56%;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
 }
 
-/* 3. 侧边天干 */
+/* 寄天干 (左侧) 与 天盘干 (右侧) */
 .grid-item .ji-gan,
 .grid-item .tianpan-gan {
     position: absolute;
-    top: 42%; 
-    margin-top: -10px; /* 垂直居中微调 */
+    top: 42%; /* 微调高度以对齐中轴线 */
     font-weight: bold;
-    font-size: 18px;
+    line-height: 1;
     z-index: 5;
 }
 
-.grid-item .ji-gan { left: 4px; }
-.grid-item .tianpan-gan { right: 4px; }
+.grid-item .ji-gan {
+    left: 6px; /* 适当缩小间距防止窄屏溢出 */
+    font-size: 20px; 
+}
 
-/* 4. 地盘干 */
+.grid-item .tianpan-gan {
+    right: 6px;
+    font-size: 20px;
+}
+
+/* 地盘干 */
 .grid-item .dipan-gan {
     position: absolute;
-    right: 4px;
+    right: 6px;
     bottom: 12%; 
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
+    line-height: 1;
     z-index: 5;
 }
 
-/* 5. 时干红框特殊处理：针对内联样式的 outline 进行强制修正 */
-.grid-item span {
+/* 时干红框优化 */
+.grid-item span[style*="outline"] {
     display: inline-block;
+    padding: 1px;
+    /* 确保红框不会撑大盒子 */
+    box-sizing: border-box; 
 }
 
-/* 针对小屏幕，通过简单的缩放来防止挤压 */
-@media (max-width: 360px) {
+/* 关键：针对 Telegram WebView 和小屏幕手机的适配 */
+@media (max-width: 430px) {
+    .grid-item .star, .grid-item .door { font-size: 20px; }
+    .grid-item .shen { font-size: 16px; }
+    .grid-item .tianpan-gan, .grid-item .dipan-gan, .grid-item .ji-gan { font-size: 17px; }
+    .grid-item .position { font-size: 11px; bottom: 2px; }
+    
+    /* 缩小间距防止重叠 */
+    .grid-item .ji-gan { left: 4px; }
+    .grid-item .tianpan-gan, .grid-item .dipan-gan { right: 4px; }
+}
+
+/* 针对极窄屏幕（如 iPhone SE） */
+@media (max-width: 340px) {
     .grid-item .star, .grid-item .door { font-size: 18px; }
-    .grid-item .shen, .grid-item .ji-gan, .grid-item .tianpan-gan, .grid-item .dipan-gan { font-size: 15px; }
-}
-
-/* 清楚浮动 */
-.grid-container::after {
-    content: "";
-    display: table;
-    clear: both;
+    .grid-item .tianpan-gan, .grid-item .dipan-gan, .grid-item .ji-gan { font-size: 15px; }
 }
