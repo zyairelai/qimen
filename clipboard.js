@@ -12,17 +12,17 @@ window.addEventListener('load', () => {
 
         // 1. 获取农历基础信息 (lunarShow 里的三行内容)
         const lunarShow = document.getElementById('lunarShow');
-        const baseText = lunarShow ? lunarShow.textContent.trim() : "";
+        let baseText = lunarShow ? lunarShow.textContent.trim() : "";
+        baseText = baseText.replace(/^(西历|农历)：.*$/gm, "").trim();
 
         // 2. 获取 QimenAI 的排盘内容
-        // 确保 QimenAI 对象在全局范围内可访问
         let aiText = "";
         if (typeof QimenAI !== 'undefined' && QimenAI.getFormattedPan) {
             aiText = QimenAI.getFormattedPan();
         }
 
         // 3. 拼接最终文本：基础内容 + 两个换行 + AI排盘内容
-        const fullContent = `${baseText}\n\n${aiText}`;
+        const fullContent = [baseText, aiText].filter(Boolean).join('\n\n');
 
         // 执行复制
         navigator.clipboard.writeText(fullContent).then(() => {

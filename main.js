@@ -38,7 +38,7 @@ function renderUI() {
   // 计算旬首
   const shiGanZhi = lunar.getTimeInGanZhi();
   const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
-  const xunshou = xunResult ? `${xunResult.name}(${xunResult.liuYi})` : "未知";
+  const xunshou = xunResult ? `${xunResult.name}（${xunResult.liuYi}）` : "未知";
 
   // 计算值符
   const xunLiuYi = xunResult ? xunResult.liuYi : "";
@@ -68,17 +68,17 @@ function renderUI() {
   // const dayXunName = dayXun ? dayXun.name : "";
   // const kwInfos = KongWangCalculator.getKongWang(dayXunName);
 
-  // Debugging
-  const aiText = QimenAI.getFormattedPan();
-
-  const output = `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}
-  农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}
-  干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时
-  局数：${jushu}\u3000旬首：${xunshou}
-  值符：${zhifu}
-  值使：${zhishi.fullTitle}
-  驿马：${yimaInfo.zhi}落${yimaInfo.gong}
-  空亡：${kwInfos.map(k => k.zhi).join('')}落${[...new Set(kwInfos.map(k => k.gong))].join('/')}`;
+  const output = [
+    // `${QimenAI.getFormattedPan()}`,
+    `西历：${y}-${m}-${d} ${h}:${min} ${weekDay}`,
+    `农历：${selectedDate.getFullYear()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
+    `干支：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${dayLunar.getDayInGanZhi()}日 ${lunar.getTimeInGanZhi()}时`,
+    `局数：${jushu}\u3000旬首：${xunshou}`, // \u3000 is a full-width space
+    `值符：${zhifu}`,
+    `值使：${zhishi.fullTitle}`,
+    `驿马：${yimaInfo.gong}`,
+    `空亡：${[...new Set(kwInfos.map(k => k.gong))].join(' / ')}`
+  ].join('\n');
 
   lunarShow.textContent = output;
 

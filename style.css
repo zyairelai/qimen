@@ -240,7 +240,7 @@ html, body {
 /* 2. 中轴线三元素：神、星、门 垂直均匀对齐 */
 .grid-item .shen {
     position: absolute;
-    top: 8%;
+    top: 12%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 22px;
@@ -249,16 +249,16 @@ html, body {
 
 .grid-item .star {
     position: absolute;
-    top: 33%;
+    top: 32%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 26px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .grid-item .door {
     position: absolute;
-    top: 58%;
+    top: 55%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 26px;
