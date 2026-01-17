@@ -265,28 +265,43 @@ html, body {
     font-weight: 700;
 }
 
-/* 3. 右侧天干：天盘干压在地盘干正上方 */
-/* 地盘干：固定在右下角，稍微避开最底部的宫位文字 */
+/* 寄天干 (左侧) 与 天盘干 (右侧) 保持水平一致 */
+.grid-item .ji-gan,
+.grid-item .tianpan-gan {
+    position: absolute;
+    top: 40%; /* 统一高度 */
+    transform: translateY(-50%); /* 垂直居中对齐 */
+    font-weight: bold;
+    line-height: 1;
+    z-index: 5;
+}
+
+.grid-item .ji-gan {
+    left: 8px;
+    font-size: 20px; /* 设为相同大小，视觉更平衡 */
+}
+
+.grid-item .tianpan-gan {
+    right: 8px;
+    font-size: 20px;
+}
+
+/* 地盘干：固定在右下角，不影响上方对齐 */
 .grid-item .dipan-gan {
     position: absolute;
     right: 8px;
-    bottom: 10%; /* 确保在地盘文字上方 */
+    bottom: 12%; 
     font-size: 20px;
     font-weight: bold;
     line-height: 1;
+    z-index: 5;
 }
 
-/* 天盘干：精准对齐在地盘干上方 */
-.grid-item .tianpan-gan {
-    position: absolute;
-    right: 8px;
-    bottom: 30%; /* 调整这个百分比来控制天干之间的间距 */
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 1;
+/* 时干红框优化：确保框选不会位移 */
+.grid-item span[style*="outline"] {
+    display: inline-block;
+    padding: 1px;
 }
-
-/* 特殊处理：如果有寄宫（如禽芮同宫），建议在 HTML 里给这两个字包一个 span 换行 */
 
 /* 针对小屏幕手机微调 */
 @media (max-width: 380px) {

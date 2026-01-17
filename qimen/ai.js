@@ -5,7 +5,28 @@ const QimenAI = {
         8: "艮八", 1: "坎一", 6: "乾六"
     },
 
+    /**
+     * 获取格式化的文本输出
+     * 顺序：天干组合，神，星，门
+     */
     getFormattedPan: function() {
+        const data = this.getPanObject();
+        if (typeof data === 'string') return data; // 返回错误信息
+
+        return data.map(p => {
+            let line = `${p.palaceName}：${p.ganCombined}，${p.shen}，${p.star}，${p.door}`;
+            if (p.isRuiPalace) {
+                line += `（寄${p.jiGan}、${p.jiStar}）`;
+            }
+            return line;
+        }).join('\n');
+    },
+
+    /**
+     * 获取结构化的数据对象
+     * 方便直接提取 data 字段
+     */
+    getPanObject: function() {
         if (typeof selectedDate === 'undefined') return "请先选择日期";
 
         const lunar = Lunar.fromDate(selectedDate);
@@ -14,7 +35,6 @@ const QimenAI = {
         const xunResult = XunShouCalculator.getShiXun(shiGanZhi);
         if (!xunResult) return "旬首计算失败";
         
-        // 1. 获取地盘，这是获取中五原始天干的关键
         const diPanGans = getDiPan(jushu) || {}; 
         const shiGan = shiGanZhi.charAt(0);
 
@@ -36,13 +56,10 @@ const QimenAI = {
         const shens = BashenCalculator.calculateShen(jushu, targetPalace) || {};
         const doors = BamenCalculator.calculateDoors(zhiShiInfo.door, zhiShiPalaceNum) || {};
 
-        // --- 核心逻辑：动态定位寄宫与天禽 ---
-        
-        // 获取中五宫的地盘天干（寄干）
         const zhongWuGan = diPanGans[5] || "戊"; 
 
-        // 找到天芮星所在的宫位
-        let ruiPalace = 2; // 默认坤二
+        // 确定天芮星位置
+        let ruiPalace = 2; 
         for (let i = 1; i <= 9; i++) {
             if ((stars[i] || "").includes("芮")) {
                 ruiPalace = i;
@@ -50,40 +67,25 @@ const QimenAI = {
             }
         }
 
-        let lines = [];
-        // 渲染顺序：九宫格排布通常按：巽-离-坤 / 震-兑 / 艮-坎-乾
         const sortOrder = [4, 9, 2, 3, 7, 8, 1, 6]; 
-
-        sortOrder.forEach(gong => {
-            const name = this.palaceNames[gong];
-            const diGan = diPanGans[gong] || "";
-            const tianGan = tianPanGans[gong] || "";
-            const shen = shens[gong] || "";
-            const door = doors[gong] || "";
-            
-            // 处理星体显示
+        
+        return sortOrder.map(gong => {
             const rawStar = stars[gong] || "";
             const isRui = rawStar.includes("芮");
-            const starDisplay = isRui ? "天芮" : rawStar;
+            const tianGan = tianPanGans[gong] || "";
+            const diGan = diPanGans[gong] || "";
 
-            // 基础组合：天干+地干
-            const ganCombined = (tianGan && diGan) ? `${tianGan}+${diGan}` : (tianGan || diGan);
-            
-            let details = [ganCombined, door, starDisplay, shen];
-
-            // 动态判断：如果是天芮星所在的宫位，拉取中五寄宫信息
-            if (gong === ruiPalace) {
-                // 将寄干和天禽星合并显示
-                details.push(`（寄${zhongWuGan}、天禽）`);
-            }
-
-            // 过滤空值并合并
-            const lineText = `${name}：${details.filter(Boolean).join('，')}`
-                .replace('，（', '（'); 
-                
-            lines.push(lineText);
+            return {
+                palaceId: gong,
+                palaceName: this.palaceNames[gong],
+                ganCombined: (tianGan && diGan) ? `${tianGan}+${diGan}` : (tianGan || diGan),
+                shen: shens[gong] || "",
+                star: isRui ? "天芮" : rawStar,
+                door: doors[gong] || "",
+                isRuiPalace: gong === ruiPalace,
+                jiGan: (gong === ruiPalace) ? zhongWuGan : null,
+                jiStar: (gong === ruiPalace) ? "天禽" : null
+            };
         });
-
-        return lines.join('\n');
     }
 };
