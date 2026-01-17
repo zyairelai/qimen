@@ -232,7 +232,7 @@ html, body {
     bottom: 2px; 
     left: 50%; 
     transform: translateX(-50%); 
-    font-size: 11px; 
+    font-size: 15px; 
     color: #94a3b8; 
     white-space: nowrap; 
 }
