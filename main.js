@@ -51,13 +51,22 @@ function renderUI() {
   const xunName = xunResult ? xunResult.name : ""; 
   const zhishi = ZhiShiCalculator.getZhiShi(jushu, xunName, xunLiuYi, shiZhi);
 
-  // 计算驿马
-  const dayZhi = dayLunar.getDayInGanZhi().substring(1, 2); 
-  const yimaInfo = YiMaCalculator.getYiMa(dayZhi);
+  // 时家驿马
+  const yimaInfo = YiMaCalculator.getYiMa(shiZhi);
 
-  // 计算空亡
+  // 时家空亡
   const xunNameOnly = xunResult ? xunResult.name : ""; 
   const kwInfos = KongWangCalculator.getKongWang(xunNameOnly);
+
+  // 日家驿马
+  // const dayZhi = dayLunar.getDayInGanZhi().substring(1, 2); 
+  // const yimaInfo = YiMaCalculator.getYiMa(dayZhi);
+
+  // 日家空亡
+  // const dayGanZhi = dayLunar.getDayInGanZhi();
+  // const dayXun = XunShouCalculator.getShiXun(dayGanZhi);
+  // const dayXunName = dayXun ? dayXun.name : "";
+  // const kwInfos = KongWangCalculator.getKongWang(dayXunName);
 
   // Debugging
   const aiText = QimenAI.getFormattedPan();
