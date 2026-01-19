@@ -171,12 +171,35 @@ function renderHistoryList() {
 function openHistoryModal() {
     document.getElementById('historyModal').classList.add('active');
     renderHistoryList();
+    // Add history state if not already there
+    if (window.location.hash !== '#history') {
+        history.pushState({ modal: 'history' }, '', '#history');
+    }
 }
 
-function closeHistoryModal() {
-    // Close any open swipe items when closing modal
+function closeHistoryModal(isPopState = false) {
+    const modal = document.getElementById('historyModal');
+    const content = modal.querySelector('.history-content');
+
+    if (!modal.classList.contains('active')) return;
+
+    // Close any open swipe items
     document.querySelectorAll('.history-item.swiped-left').forEach(el => el.classList.remove('swiped-left'));
-    document.getElementById('historyModal').classList.remove('active');
+
+    // Trigger animation
+    content.classList.add('closing');
+
+    // Wait for animation to finish
+    content.onanimationend = () => {
+        content.classList.remove('closing');
+        modal.classList.remove('active');
+        content.onanimationend = null; // Cleanup
+    };
+
+    // If closed via UI (not back button), update history
+    if (!isPopState && window.location.hash === '#history') {
+        history.back();
+    }
 }
 
 window.saveCurrentDate = () => {
@@ -221,4 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('historyModal').oncontextmenu = (e) => {
         e.preventDefault();
     };
+
+    // Handle back button
+    window.addEventListener('popstate', (e) => {
+        if (document.getElementById('historyModal').classList.contains('active')) {
+            closeHistoryModal(true);
+        }
+    });
 });

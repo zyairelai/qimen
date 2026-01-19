@@ -30,6 +30,10 @@
     animation: slideUp 0.3s ease-out;
 }
 
+.history-content.closing {
+    animation: slideDown 0.3s ease-in forwards;
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(100%);
@@ -37,6 +41,16 @@
 
     to {
         transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(100%);
     }
 }
 
