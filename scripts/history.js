@@ -51,7 +51,8 @@ function renderHistoryList() {
         item.className = 'history-item';
         item.dataset.id = entry.id;
         item.innerHTML = `
-            <button class="swipe-delete-btn" title="Delete">🗑️</button>
+            <button class="swipe-action-btn swipe-edit-btn" title="Edit">🖋️</button>
+            <button class="swipe-action-btn swipe-delete-btn" title="Delete">🗑️</button>
             <div class="history-item-content">
                 <div class="entry-name">${entry.name}</div>
                 <div class="entry-date">${entry.dateStr}</div>
@@ -59,6 +60,7 @@ function renderHistoryList() {
         `;
 
         const content = item.querySelector('.history-item-content');
+        const editBtn = item.querySelector('.swipe-edit-btn');
         const deleteBtn = item.querySelector('.swipe-delete-btn');
 
         let startX = 0;
@@ -130,6 +132,23 @@ function renderHistoryList() {
         // Click for desktop support
         content.addEventListener('click', () => {
             if (!isSwiping) handleSelect();
+        });
+
+        // Edit action
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newName = prompt("Edit Name:", entry.name);
+            if (newName && newName.trim() !== "") {
+                const history = getHistory();
+                const updatedHistory = history.map(h => {
+                    if (h.id === entry.id) {
+                        return { ...h, name: newName.trim() };
+                    }
+                    return h;
+                });
+                saveHistory(updatedHistory);
+                renderHistoryList();
+            }
         });
 
         // Delete action

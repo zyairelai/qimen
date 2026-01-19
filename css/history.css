@@ -95,7 +95,7 @@
 }
 
 .history-item.swiped-left .history-item-content {
-    transform: translateX(-70px);
+    transform: translateX(-120px);
 }
 
 .history-item .entry-name {
@@ -109,13 +109,11 @@
     color: #666;
 }
 
-.swipe-delete-btn {
+.swipe-action-btn {
     position: absolute;
-    right: 0;
     top: 0;
     bottom: 0;
-    width: 70px;
-    background-color: var(--accent-color);
+    width: 60px;
     color: white;
     display: flex;
     align-items: center;
@@ -125,4 +123,14 @@
     cursor: pointer;
     border: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.swipe-edit-btn {
+    right: 60px;
+    background-color: #4b5563; /* Gray */
+}
+
+.swipe-delete-btn {
+    right: 0;
+    background-color: var(--accent-color);
 }
