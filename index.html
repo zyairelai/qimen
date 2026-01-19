@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>风后奇门</title>
@@ -8,8 +9,9 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
   <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" href="favicon/favicon.ico">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
   <link rel="stylesheet" href="css/grid.css">
   <link rel="stylesheet" href="css/picker.css">
   <link rel="stylesheet" href="css/style.css">
@@ -28,64 +30,84 @@
   <script src="qimen/zhifu.js"></script>
   <script src="qimen/zhishi.js"></script>
 </head>
+
 <body>
 
-<div class="top-bar">
-  <div class="controls">
-    <!-- <button id="prevDayBtn">◀◀</button> -->
-    <button id="prevBtn">◀</button>
-    <div class="datetime-display" id="dateShow">Loading...</div>
-    <button id="nextBtn">▶</button>
-    <!-- <button id="nextDayBtn">▶▶</button> -->
-    <button id="nowBtn" title="Reset to Current Time">🔄</button>
-    <button id="copyBtn" title="Copy to Clipboard for AI Analysis">📋</button>
+  <div class="top-bar">
+    <div class="controls">
+      <!-- <button id="prevDayBtn">◀◀</button> -->
+      <button id="prevBtn">◀</button>
+      <div class="datetime-display" id="dateShow">Loading...</div>
+      <button id="nextBtn">▶</button>
+      <!-- <button id="nextDayBtn">▶▶</button> -->
+      <button id="nowBtn" title="Reset to Current Time">🔄</button>
+      <button id="copyBtn" title="Copy to Clipboard for AI Analysis">📋</button>
+    </div>
+    <div class="lunar-info" id="lunarShow">LOADING...</div>
   </div>
-  <div class="lunar-info" id="lunarShow">LOADING...</div>
-</div>
 
-<div class="picker-overlay" id="overlay">
-  <div class="custom-picker">
-    <div class="picker-header">
-      <span id="prevMonth">◀</span>
-      <div id="monthYearTitle">
-        <span id="selectMonthText"></span> 
-        <span id="selectYearText"></span>
+  <div class="picker-overlay" id="overlay">
+    <div class="custom-picker">
+      <div class="picker-header">
+        <span id="prevMonth">◀</span>
+        <div id="monthYearTitle">
+          <span id="selectMonthText"></span>
+          <span id="selectYearText"></span>
+        </div>
+        <span id="nextMonth">▶</span>
       </div>
-      <span id="nextMonth">▶</span>
-    </div>
-    <div class="picker-grid" id="daysGrid"></div>
-    <div class="time-setter">
-      <input type="time" id="timeInput">
-      <button id="confirmTimeBtn">OK</button>
+      <div class="picker-grid" id="daysGrid"></div>
+      <div class="time-setter">
+        <input type="time" id="timeInput">
+        <button id="confirmTimeBtn">OK</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="grid-container" id="qimenGrid">
-  <div class="grid-item"><div class="main-content"></div> <span class="position">巽四</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">离九</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">坤二</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">震三</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">中五</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">兑七</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">艮八</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">坎一</span></div>
-  <div class="grid-item"><div class="main-content"></div> <span class="position">乾六</span></div>
-</div>
+  <div class="grid-container" id="qimenGrid">
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">巽四</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">离九</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">坤二</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">震三</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">中五</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">兑七</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">艮八</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">坎一</span>
+    </div>
+    <div class="grid-item">
+      <div class="main-content"></div> <span class="position">乾六</span>
+    </div>
+  </div>
 
-<script src="main.js"></script>
-<script src="button.js"></script>
-<script src="calendar.js"></script>
-<script src="clipboard.js"></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registered', reg))
-        .catch(err => console.error('Service Worker registration failed', err));
-    });
-  }
-</script>
+  <script src="scripts/main.js"></script>
+  <script src="scripts/button.js"></script>
+  <script src="scripts/calendar.js"></script>
+  <script src="scripts/clipboard.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered', reg))
+          .catch(err => console.error('Service Worker registration failed', err));
+      });
+    }
+  </script>
 
 </body>
+
 </html>
