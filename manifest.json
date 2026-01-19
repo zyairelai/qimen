@@ -1,6 +1,6 @@
 {
-  "name": "风后奇门",
-  "short_name": "Qimen",
+  "name": "疯后奇门",
+  "short_name": "疯后奇门",
   "description": "奇门遁甲排盘工具",
   "start_url": "./index.html",
   "display": "standalone",
