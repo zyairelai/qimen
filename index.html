@@ -42,6 +42,8 @@
       <!-- <button id="nextDayBtn">▶▶</button> -->
       <button id="nowBtn" title="Reset to Current Time">🔄</button>
       <button id="copyBtn" title="Copy to Clipboard for AI Analysis">📋</button>
+      <button id="saveBtn" title="Save Current State" class="pwa-only">💾</button>
+      <button id="historyBtn" title="View History" class="pwa-only">📜</button>
     </div>
     <div class="lunar-info" id="lunarShow">LOADING...</div>
   </div>
@@ -60,6 +62,19 @@
       <div class="time-setter">
         <input type="time" id="timeInput">
         <button id="confirmTimeBtn">OK</button>
+      </div>
+
+      <div class="picker-overlay" id="historyOverlay">
+        <div class="custom-picker">
+          <div class="picker-header">
+            <span id="backToCalendar" style="visibility: hidden;">◀</span>
+            <div id="historyTitle" style="font-weight: bold; font-size: 18px;">History</div>
+            <span id="closeHistory" style="cursor: pointer; padding: 5px;">✕</span>
+          </div>
+          <div id="historyList" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+            <!-- History items will be inserted here -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
