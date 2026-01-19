@@ -5,15 +5,14 @@ window.addEventListener('load', () => {
     if (!copyBtn) return;
 
     let timer = null;
-    const originalIcon = '📋'; 
+    const originalIcon = '📋';
 
-    copyBtn.onclick = function() {
+    copyBtn.onclick = function () {
         if (timer) clearTimeout(timer);
 
         // 1. 获取农历基础信息 (lunarShow 里的三行内容)
         const lunarShow = document.getElementById('lunarShow');
         let baseText = lunarShow ? lunarShow.textContent.trim() : "";
-        baseText = baseText.replace(/^(西历|农历)：.*$/gm, "").trim();
 
         // 2. 获取 QimenAI 的排盘内容
         let aiText = "";
@@ -27,7 +26,7 @@ window.addEventListener('load', () => {
         // 执行复制
         navigator.clipboard.writeText(fullContent).then(() => {
             this.textContent = '✅';
-            
+
             timer = setTimeout(() => {
                 this.textContent = originalIcon;
                 timer = null;
