@@ -2,10 +2,6 @@
 
 const HISTORY_KEY = 'qimen_history';
 let currentEditingId = null;
-let longPressTimer = null;
-let isLongPressing = false;
-let touchStartX = 0;
-let touchStartY = 0;
 
 function isStandalone() {
     const isStandaloneMode = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
@@ -53,92 +49,84 @@ function renderHistoryList() {
     history.forEach(entry => {
         const item = document.createElement('div');
         item.className = 'history-item';
+        item.dataset.id = entry.id;
         item.innerHTML = `
-      <div class="entry-name">${entry.name}</div>
-      <div class="entry-date">${entry.dateStr}</div>
-    `;
+            <button class="swipe-delete-btn" title="Delete">🗑️</button>
+            <div class="history-item-content">
+                <div class="entry-name">${entry.name}</div>
+                <div class="entry-date">${entry.dateStr}</div>
+            </div>
+        `;
 
-        // We use touchend and mouseup to handle the "click" to avoid conflicts with long press
-        const handleSelect = (e) => {
-            if (isLongPressing) return;
+        const content = item.querySelector('.history-item-content');
+        const deleteBtn = item.querySelector('.swipe-delete-btn');
+
+        let startX = 0;
+        let currentX = 0;
+        let isSwiping = false;
+        const threshold = 40;
+
+        const handleSelect = () => {
+            if (item.classList.contains('swiped-left')) {
+                item.classList.remove('swiped-left');
+                return;
+            }
             selectedDate = new Date(entry.timestamp);
             currentViewDate = new Date(selectedDate);
             renderUI();
             closeHistoryModal();
         };
 
-        item.onmousedown = (e) => startLongPress(e, entry);
-        item.ontouchstart = (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            startLongPress(e, entry);
-        };
+        // Touch events for swiping
+        content.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isSwiping = false;
+            // Close any other swiped items
+            document.querySelectorAll('.history-item.swiped-left').forEach(el => {
+                if (el !== item) el.classList.remove('swiped-left');
+            });
+        }, { passive: true });
 
-        item.onmousemove = clearLongPress;
-        item.ontouchmove = (e) => {
-            // If moved too much, cancel long press
-            const moveX = Math.abs(e.touches[0].clientX - touchStartX);
-            const moveY = Math.abs(e.touches[0].clientY - touchStartY);
-            if (moveX > 10 || moveY > 10) {
-                clearLongPress();
+        content.addEventListener('touchmove', (e) => {
+            currentX = e.touches[0].clientX;
+            const diffX = startX - currentX;
+
+            if (diffX > 10) {
+                isSwiping = true;
             }
-        };
+        }, { passive: true });
 
-        item.onmouseup = (e) => {
-            if (!isLongPressing && longPressTimer) {
-                handleSelect(e);
+        content.addEventListener('touchend', (e) => {
+            const diffX = startX - e.changedTouches[0].clientX;
+            if (diffX > threshold) {
+                item.classList.add('swiped-left');
+            } else if (diffX < -threshold) {
+                item.classList.remove('swiped-left');
+            } else if (!isSwiping) {
+                handleSelect();
             }
-            clearLongPress();
-        };
+        });
 
-        item.ontouchend = (e) => {
-            if (!isLongPressing && longPressTimer) {
-                handleSelect(e);
-                e.preventDefault(); // Prevent ghost click
+        // Click for desktop support
+        content.addEventListener('click', () => {
+            if (!isSwiping) handleSelect();
+        });
+
+        // Delete action
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentEditingId = entry.id;
+            if (confirm("Are you sure you want to delete this entry?")) {
+                let history = getHistory();
+                history = history.filter(h => h.id !== currentEditingId);
+                saveHistory(history);
+                renderHistoryList();
             }
-            clearLongPress();
-        };
-
-        item.onmouseleave = clearLongPress;
+            currentEditingId = null;
+        });
 
         historyList.appendChild(item);
     });
-}
-
-function startLongPress(e, entry) {
-    clearLongPress();
-    isLongPressing = false;
-    longPressTimer = setTimeout(() => {
-        isLongPressing = true;
-        showContextMenu(entry);
-    }, 600);
-}
-
-function clearLongPress() {
-    if (longPressTimer) {
-        clearTimeout(longPressTimer);
-        longPressTimer = null;
-    }
-    // We don't reset isLongPressing here immediately because we need it in onmouseup/touchend
-    // It's reset at the start of startLongPress
-}
-
-function showContextMenu(entry) {
-    currentEditingId = entry.id;
-    const menu = document.getElementById('editDeleteMenu');
-    menu.classList.add('active');
-
-    // Provide haptic feedback if available
-    if (window.navigator.vibrate) {
-        window.navigator.vibrate(50);
-    }
-}
-
-function hideContextMenu() {
-    const menu = document.getElementById('editDeleteMenu');
-    menu.classList.remove('active');
-    currentEditingId = null;
-    setTimeout(() => { isLongPressing = false; }, 100);
 }
 
 function openHistoryModal() {
@@ -147,11 +135,13 @@ function openHistoryModal() {
 }
 
 function closeHistoryModal() {
+    // Close any open swipe items when closing modal
+    document.querySelectorAll('.history-item.swiped-left').forEach(el => el.classList.remove('swiped-left'));
     document.getElementById('historyModal').classList.remove('active');
 }
 
 window.saveCurrentDate = () => {
-    const name = prompt("Enter Name for this date:");
+    const name = prompt("Enter Name：");
     if (name === null) return;
 
     const finalName = name.trim() || `Saved ${new Date().toLocaleString()}`;
@@ -181,36 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('saveBtn').onclick = window.saveCurrentDate;
     document.getElementById('historyBtn').onclick = openHistoryModal;
     document.getElementById('closeHistory').onclick = closeHistoryModal;
-
-    document.getElementById('cancelMenuBtn').onclick = hideContextMenu;
-
-    document.getElementById('deleteEntryBtn').onclick = (e) => {
-        e.stopPropagation();
-        if (!currentEditingId) return;
-        if (confirm("Are you sure you want to delete this entry?")) {
-            let history = getHistory();
-            history = history.filter(h => h.id !== currentEditingId);
-            saveHistory(history);
-            renderHistoryList();
-            hideContextMenu();
-        }
-    };
-
-    document.getElementById('editEntryBtn').onclick = (e) => {
-        e.stopPropagation();
-        if (!currentEditingId) return;
-        const history = getHistory();
-        const entry = history.find(h => h.id === currentEditingId);
-        if (entry) {
-            const newName = prompt("Edit Name:", entry.name);
-            if (newName !== null && newName.trim() !== "") {
-                entry.name = newName.trim();
-                saveHistory(history);
-                renderHistoryList();
-            }
-        }
-        hideContextMenu();
-    };
 
     document.getElementById('historyModal').onclick = (e) => {
         if (e.target.id === 'historyModal') {
