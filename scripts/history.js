@@ -62,8 +62,11 @@ function renderHistoryList() {
         const deleteBtn = item.querySelector('.swipe-delete-btn');
 
         let startX = 0;
+        let startY = 0;
         let currentX = 0;
+        let currentY = 0;
         let isSwiping = false;
+        let isScrolling = false;
         const threshold = 40;
 
         const handleSelect = () => {
@@ -80,7 +83,9 @@ function renderHistoryList() {
         // Touch events for swiping
         content.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
             isSwiping = false;
+            isScrolling = false;
             // Close any other swiped items
             document.querySelectorAll('.history-item.swiped-left').forEach(el => {
                 if (el !== item) el.classList.remove('swiped-left');
@@ -88,21 +93,36 @@ function renderHistoryList() {
         }, { passive: true });
 
         content.addEventListener('touchmove', (e) => {
-            currentX = e.touches[0].clientX;
-            const diffX = startX - currentX;
+            if (isScrolling) return;
 
-            if (diffX > 10) {
+            currentX = e.touches[0].clientX;
+            currentY = e.touches[0].clientY;
+            const diffX = startX - currentX;
+            const diffY = startY - currentY;
+
+            // If vertical movement is significant, consider it a scroll
+            if (Math.abs(diffY) > 10 && !isSwiping) {
+                isScrolling = true;
+                return;
+            }
+
+            if (Math.abs(diffX) > 10) {
                 isSwiping = true;
             }
         }, { passive: true });
 
         content.addEventListener('touchend', (e) => {
+            if (isScrolling) return;
+
             const diffX = startX - e.changedTouches[0].clientX;
+            const diffY = startY - e.changedTouches[0].clientY;
+
             if (diffX > threshold) {
                 item.classList.add('swiped-left');
             } else if (diffX < -threshold) {
                 item.classList.remove('swiped-left');
-            } else if (!isSwiping) {
+            } else if (!isSwiping && Math.abs(diffY) < 10) {
+                // Only select if not swiping and didn't move vertically much
                 handleSelect();
             }
         });
