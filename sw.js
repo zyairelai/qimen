@@ -22,6 +22,9 @@ const ASSETS_TO_CACHE = [
     './qimen/yima.js',
     './qimen/zhifu.js',
     './qimen/zhishi.js',
+    './favicon/favicon.png',
+    './favicon/icon-192.png',
+    './favicon/icon-512.png',
     'https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js'
 ];
 
