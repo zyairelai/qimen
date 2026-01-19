@@ -98,6 +98,7 @@
   <script src="scripts/button.js"></script>
   <script src="scripts/calendar.js"></script>
   <script src="scripts/clipboard.js"></script>
+  <script src="scripts/history.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -107,6 +108,29 @@
       });
     }
   </script>
+
+  <div class="bottom-controls" id="bottomControls">
+    <button id="saveBtn">💾 Save</button>
+    <button id="historyBtn">📜 History</button>
+  </div>
+
+  <div class="history-modal" id="historyModal">
+    <div class="history-content">
+      <div class="history-header">
+        <h3>Saved History</h3>
+        <button id="closeHistory">✕</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <!-- History entries will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="editDeleteMenu" class="context-menu">
+    <button id="editEntryBtn">Edit Name</button>
+    <button id="deleteEntryBtn" class="delete-btn">Delete</button>
+    <button id="cancelMenuBtn">Cancel</button>
+  </div>
 
 </body>
 
