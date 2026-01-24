@@ -59,8 +59,29 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #f0f0f0;
     padding-bottom: 10px;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.history-sort-select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    color: #666;
+    background: #fdfdfd;
+    outline: none;
+    cursor: pointer;
+}
+
+.history-sort-select:focus {
+    border-color: #3b82f6;
 }
 
 .history-header h3 {

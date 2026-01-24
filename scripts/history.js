@@ -2,6 +2,7 @@
 
 const HISTORY_KEY = 'qimen_history';
 let currentEditingId = null;
+let currentSort = 'newest';
 
 function isStandalone() {
     const isStandaloneMode = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
@@ -44,7 +45,13 @@ function renderHistoryList() {
         return;
     }
 
-    history.sort((a, b) => b.savedAt - a.savedAt);
+    if (currentSort === 'newest') {
+        history.sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+    } else if (currentSort === 'oldest') {
+        history.sort((a, b) => (a.savedAt || 0) - (b.savedAt || 0));
+    } else if (currentSort === 'name') {
+        history.sort((a, b) => a.name.localeCompare(b.name));
+    }
 
     history.forEach(entry => {
         const item = document.createElement('div');
@@ -233,6 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('saveBtn').onclick = window.saveCurrentDate;
     document.getElementById('historyBtn').onclick = openHistoryModal;
     document.getElementById('closeHistory').onclick = closeHistoryModal;
+
+    const sortSelect = document.getElementById('historySort');
+    if (sortSelect) {
+        sortSelect.value = currentSort;
+        sortSelect.onchange = (e) => {
+            currentSort = e.target.value;
+            renderHistoryList();
+        };
+    }
 
     document.getElementById('historyModal').onclick = (e) => {
         if (e.target.id === 'historyModal') {
