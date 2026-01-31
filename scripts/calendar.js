@@ -4,7 +4,7 @@ function renderCalendar(view = 'days') {
     const daysGrid = document.getElementById('daysGrid');
     const monthText = document.getElementById('selectMonthText');
     const yearText = document.getElementById('selectYearText');
-    
+
     if (!daysGrid || !monthText || !yearText || typeof currentViewDate === 'undefined') return;
 
     daysGrid.innerHTML = '';
@@ -17,7 +17,7 @@ function renderCalendar(view = 'days') {
 
     if (view === 'years') {
         // --- 1. 年份选择视图 ---
-        daysGrid.style.gridTemplateColumns = 'repeat(4, 1fr)'; 
+        daysGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
         daysGrid.style.maxHeight = '250px';
         daysGrid.style.overflowY = 'auto';
 
@@ -27,9 +27,10 @@ function renderCalendar(view = 'days') {
             yearEl.textContent = y;
             yearEl.onclick = (e) => {
                 e.stopPropagation();
+                currentViewDate.setDate(1);
                 currentViewDate.setFullYear(y);
                 // 【重点】选完年份，自动进入选月份界面
-                renderCalendar('months'); 
+                renderCalendar('months');
             };
             daysGrid.appendChild(yearEl);
             if (y === year) {
@@ -47,9 +48,10 @@ function renderCalendar(view = 'days') {
             monEl.textContent = name;
             monEl.onclick = (e) => {
                 e.stopPropagation();
+                currentViewDate.setDate(1);
                 currentViewDate.setMonth(index);
                 // 【重点】选完月份，回到日期界面
-                renderCalendar('days'); 
+                renderCalendar('days');
             };
             daysGrid.appendChild(monEl);
         });
@@ -57,7 +59,7 @@ function renderCalendar(view = 'days') {
         // --- 3. 日期选择视图 ---
         daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
         daysGrid.style.overflowY = 'hidden';
-        
+
         const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         weekDays.forEach(day => {
             const dayHeader = document.createElement('div');
@@ -74,10 +76,10 @@ function renderCalendar(view = 'days') {
 
         for (let day = 1; day <= lastDate; day++) {
             const dayEl = document.createElement('div');
-            const isSelected = day === selectedDate.getDate() && 
-                             month === selectedDate.getMonth() && 
-                             year === selectedDate.getFullYear();
-            
+            const isSelected = day === selectedDate.getDate() &&
+                month === selectedDate.getMonth() &&
+                year === selectedDate.getFullYear();
+
             dayEl.className = 'picker-day' + (isSelected ? ' selected' : '');
             dayEl.textContent = day;
             dayEl.onclick = (e) => {
@@ -104,15 +106,17 @@ window.addEventListener('load', () => {
 
     document.getElementById('prevMonth').onclick = (e) => {
         e.stopPropagation();
+        currentViewDate.setDate(1);
         currentViewDate.setMonth(currentViewDate.getMonth() - 1);
         renderCalendar('days');
     };
 
     document.getElementById('nextMonth').onclick = (e) => {
         e.stopPropagation();
+        currentViewDate.setDate(1);
         currentViewDate.setMonth(currentViewDate.getMonth() + 1);
         renderCalendar('days');
     };
-    
+
     renderCalendar();
 });
