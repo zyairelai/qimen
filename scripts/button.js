@@ -12,7 +12,7 @@ document.getElementById('overlay').onclick = (e) => {
   }
 };
 
-document.getElementById('confirmTimeBtn').onclick = () => {
+const confirmTime = () => {
   const timeVal = document.getElementById('timeInput').value;
   const [h, m] = timeVal.split(':');
   selectedDate.setHours(parseInt(h));
@@ -22,6 +22,31 @@ document.getElementById('confirmTimeBtn').onclick = () => {
   document.getElementById('overlay').classList.remove('active');
   document.body.style.overflow = '';
 };
+
+document.getElementById('confirmTimeBtn').onclick = confirmTime;
+
+const timeInput = document.getElementById('timeInput');
+if (timeInput) {
+  timeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      e.stopPropagation();
+      confirmTime();
+    }
+  });
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+    const overlay = document.getElementById('overlay');
+    if (overlay && overlay.classList.contains('active')) {
+      // Don't prevent default here if it's already handled by timeInput
+      if (e.target !== timeInput) {
+        confirmTime();
+      }
+    }
+  }
+});
 
 document.getElementById('prevBtn').onclick = () => {
   selectedDate.setHours(selectedDate.getHours() - 2);
