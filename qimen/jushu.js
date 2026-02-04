@@ -1,4 +1,4 @@
-const JieQiCalculator = (function() {
+const JieQiCalculator = (function () {
     const JIEQI_ORDER = [
         '立春', '雨水', '惊蛰', '春分', '清明', '谷雨',
         '立夏', '小满', '芒种', '夏至', '小暑', '大暑',
@@ -26,7 +26,7 @@ const JieQiCalculator = (function() {
          * 计算奇门遁甲局数（拆补法）
          * @param {Date} date 标准 JS Date 对象
          */
-        calculateJuShu: function(date) {
+        calculateJuShu: function (date) {
             if (typeof Lunar === 'undefined') {
                 console.error("未检测到 lunar-javascript 库，请先引入。");
                 return "需加载Lunar库";
@@ -39,10 +39,10 @@ const JieQiCalculator = (function() {
             }
 
             const lunarObj = Lunar.fromDate(calcDate);
-            
+
             // 1. 获取当前节气（拆补法核心：当前时间所在的节气）
             // getPrevJieQi(true) 表示包含当天，确保能拿到当前所属节气
-            const jieQi = lunarObj.getPrevJieQi(true); 
+            const jieQi = lunarObj.getPrevJieQi(true);
             const jqName = jieQi.getName();
             const data = JU_DATA[jqName];
 
@@ -57,7 +57,8 @@ const JieQiCalculator = (function() {
             const yuanIndex = Math.floor((idx % 15) / 5);
             const num = data.ju[yuanIndex];
 
-            return `${data.type}遁${num}局`;
+            const yuanNames = ["上元", "中元", "下元"];
+            return `${data.type}遁${num}局（${jqName}${yuanNames[yuanIndex]}）`;
         }
     };
 })();
