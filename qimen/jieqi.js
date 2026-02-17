@@ -42,7 +42,15 @@ const JieQiCalculator = (function () {
 
             // 1. 获取当前节气（拆补法核心：当前时间所在的节气）
             // getPrevJieQi(true) 表示包含当天，确保能拿到当前所属节气
-            const jieQi = lunarObj.getPrevJieQi(true);
+            let jieQi = lunarObj.getPrevJieQi(true);
+            const jqSolar = jieQi.getSolar();
+            const jqDate = new Date(jqSolar.getYear(), jqSolar.getMonth() - 1, jqSolar.getDay(), jqSolar.getHour(), jqSolar.getMinute(), jqSolar.getSecond());
+
+            // 如果获取到的节气开始时间还没到，则取上一个节气
+            if (jqDate.getTime() > calcDate.getTime()) {
+                jieQi = lunarObj.getPrevJieQi(false);
+            }
+
             const jqName = jieQi.getName();
             const data = JU_DATA[jqName];
 

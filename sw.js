@@ -13,7 +13,7 @@ const ASSETS_TO_CACHE = [
     './qimen/bamen.js',
     './qimen/bashen.js',
     './qimen/dipan.js',
-    './qimen/jushu.js',
+    './qimen/jieqi.js',
     './qimen/stars.js',
     './qimen/tianpan.js',
     './qimen/ui.js',
