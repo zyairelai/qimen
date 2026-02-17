@@ -128,8 +128,14 @@ function updateQimen() {
         const diGan = gans[1] || "";
 
         // E. 渲染驿马与空亡 (🐎, 💀)
-        renderSpan(item, '.yima', (p.palaceId === yimaPalaceId) ? "🐎" : "");
-        renderSpan(item, '.kongwang', (kwPalaceIds.includes(p.palaceId)) ? "💀" : "");
+        const hasYima = (p.palaceId === yimaPalaceId);
+        const hasKw = kwPalaceIds.includes(p.palaceId);
+
+        renderSpan(item, '.yima', hasYima ? "🐎" : "");
+        renderSpan(item, '.kongwang', hasKw ? "💀" : "", el => {
+            if (hasYima) el.classList.add('stacked');
+            else el.classList.remove('stacked');
+        });
         renderSpan(item, '.symbol-box', ""); // 清除旧容器以免冲突
 
         // 1. 渲染 寄天干
