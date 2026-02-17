@@ -45,6 +45,14 @@ window.addEventListener('keydown', (e) => {
         confirmTime();
       }
     }
+  } else if (e.key === 'ArrowRight') {
+    selectedDate.setHours(selectedDate.getHours() + 2);
+    currentViewDate = new Date(selectedDate);
+    renderUI();
+  } else if (e.key === 'ArrowLeft') {
+    selectedDate.setHours(selectedDate.getHours() - 2);
+    currentViewDate = new Date(selectedDate);
+    renderUI();
   }
 });
 
