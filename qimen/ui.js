@@ -81,6 +81,29 @@ function updateQimen() {
     if (midItem) {
         const diPanGans = getDiPan(jushu) || {};
         ['.shen', '.star', '.door', '.tianpan-gan', '.ji-gan', '.yima', '.kongwang'].forEach(cls => renderSpan(midItem, cls, ""));
+
+        // 渲染门伏吟/反吟
+        const kaiDoorPalace = panData.find(p => p.door === "开门");
+        let doorIndicator = "";
+        if (kaiDoorPalace) {
+            if (kaiDoorPalace.palaceId === 4) doorIndicator = "门反吟";
+            else if (kaiDoorPalace.palaceId === 6) doorIndicator = "门伏吟";
+        }
+        renderSpan(midItem, '.door', doorIndicator, el => {
+            el.style.fontWeight = "600";
+        });
+
+        // 渲染星伏吟/反吟
+        const tianPengStarPalace = panData.find(p => p.star === "天蓬");
+        let starIndicator = "";
+        if (tianPengStarPalace) {
+            if (tianPengStarPalace.palaceId === 9) starIndicator = "星反吟";
+            else if (tianPengStarPalace.palaceId === 1) starIndicator = "星伏吟";
+        }
+        renderSpan(midItem, '.star', starIndicator, el => {
+            el.style.fontWeight = "600";
+        });
+
         renderSpan(midItem, '.dipan-gan', diPanGans[5] || "戊", el => {
             el.style.color = typeof getCommonColor === 'function' ? getCommonColor(diPanGans[5]) : "#795548";
             applyShiGanBox(el, diPanGans[5], searchShiGan);

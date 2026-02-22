@@ -113,7 +113,7 @@ body {
 .grid-item .kongwang {
     position: absolute;
     left: 6px;
-    font-size: 20px;
+    font-size: 18px; /* Reduced from 20px */
     line-height: 1;
     z-index: 5;
 }
@@ -178,7 +178,28 @@ body {
     .grid-item .yima,
     .grid-item .kongwang {
         left: 4px;
-        font-size: 16px;
+        font-size: 14px; /* Reduced from 16px */
+    }
+}
+
+/* 中五宫特殊样式：灰字且更小 */
+.grid-item:nth-child(5) .star,
+.grid-item:nth-child(5) .door {
+    color: grey !important;
+    font-size: 26px; /* -2 from 28px */
+}
+
+@media (max-width: 430px) {
+    .grid-item:nth-child(5) .star,
+    .grid-item:nth-child(5) .door {
+        font-size: 18px; /* -2 from 20px */
+    }
+}
+
+@media (max-width: 340px) {
+    .grid-item:nth-child(5) .star,
+    .grid-item:nth-child(5) .door {
+        font-size: 16px; /* -2 from 18px */
     }
 }
 
