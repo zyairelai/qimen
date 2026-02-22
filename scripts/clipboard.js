@@ -20,8 +20,15 @@ window.addEventListener('load', () => {
             aiText = QimenAI.getFormattedPan();
         }
 
-        // 3. 拼接最终文本：基础内容 + 两个换行 + AI排盘内容
-        const fullContent = [baseText, aiText].filter(Boolean).join('\n\n');
+        // 3. 拼接最终文本：如果 aiText 以 "局象：" 开头，则与 baseText 之间只留一个换行
+        let fullContent = baseText;
+        if (aiText) {
+            if (aiText.startsWith("局象：")) {
+                fullContent += "\n" + aiText;
+            } else {
+                fullContent += "\n\n" + aiText;
+            }
+        }
 
         // 执行复制
         navigator.clipboard.writeText(fullContent).then(() => {

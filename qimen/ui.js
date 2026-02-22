@@ -82,25 +82,26 @@ function updateQimen() {
         const diPanGans = getDiPan(jushu) || {};
         ['.shen', '.star', '.door', '.tianpan-gan', '.ji-gan', '.yima', '.kongwang'].forEach(cls => renderSpan(midItem, cls, ""));
 
-        // 渲染门伏吟/反吟
-        const kaiDoorPalace = panData.find(p => p.door === "开门");
-        let doorIndicator = "";
-        if (kaiDoorPalace) {
-            if (kaiDoorPalace.palaceId === 4) doorIndicator = "门反吟";
-            else if (kaiDoorPalace.palaceId === 6) doorIndicator = "门伏吟";
+        // 渲染中宫指示器 (Fan/Fu Yin)
+        const indicators = QimenAI.getMiddleIndicators(panData);
+
+        // 1. Stems (干)
+        const ganInd = indicators.find(s => s.startsWith("干"));
+        if (ganInd) {
+            renderSpan(midItem, '.shen', ganInd, el => {
+                el.style.color = "#6B7280";
+            });
         }
-        renderSpan(midItem, '.door', doorIndicator, el => {
+
+        // 2. Doors (门)
+        const doorInd = indicators.find(s => s.startsWith("门"));
+        renderSpan(midItem, '.door', doorInd || "", el => {
             el.style.fontWeight = "600";
         });
 
-        // 渲染星伏吟/反吟
-        const tianPengStarPalace = panData.find(p => p.star === "天蓬");
-        let starIndicator = "";
-        if (tianPengStarPalace) {
-            if (tianPengStarPalace.palaceId === 9) starIndicator = "星反吟";
-            else if (tianPengStarPalace.palaceId === 1) starIndicator = "星伏吟";
-        }
-        renderSpan(midItem, '.star', starIndicator, el => {
+        // 3. Stars (星)
+        const starInd = indicators.find(s => s.startsWith("星"));
+        renderSpan(midItem, '.star', starInd || "", el => {
             el.style.fontWeight = "600";
         });
 
@@ -117,10 +118,23 @@ function updateQimen() {
         const item = gridItems[idx];
         if (!item) return;
 
-        const tianGan = p.ganCombined.split('+')[0] || "";
-        const isMainMatch = (tianGan === searchRiGan);
-        const isJiMatch = (p.isRuiPalace && p.jiGan === searchRiGan);
-        item.style.backgroundColor = (isMainMatch || isJiMatch) ? "#FEF3C7" : "";
+        const gans = p.ganCombined.split('+');
+        const tianGan = gans[0] || "";
+        const diGan = gans[1] || "";
+        const jiGan = p.jiGan || "";
+
+        // Highlight logic
+        const isRiMatch = (tianGan === searchRiGan) || (p.isRuiPalace && p.jiGan === searchRiGan);
+        const hasGuiGeng = (tianGan === "癸" || diGan === "癸" || jiGan === "癸") &&
+            (tianGan === "庚" || diGan === "庚" || jiGan === "庚");
+
+        if (hasGuiGeng) {
+            item.style.backgroundColor = "#E0F2FE"; // Light Sky Blue
+        } else if (isRiMatch) {
+            item.style.backgroundColor = "#FEF3C7"; // Light Yellow
+        } else {
+            item.style.backgroundColor = "";
+        }
 
         // A. 渲染神
         renderSpan(item, '.shen', p.shen, el => {
@@ -147,8 +161,7 @@ function updateQimen() {
         });
 
         // D. 天盘与地盘逻辑
-        const gans = p.ganCombined.split('+');
-        const diGan = gans[1] || "";
+        // Already defined: gans, diGan
 
         // E. 渲染驿马与空亡 (🐎, 💀)
         const hasYima = (p.palaceId === yimaPalaceId);
