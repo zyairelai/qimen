@@ -46,24 +46,24 @@ window.addEventListener('keydown', (e) => {
       }
     }
   } else if (e.key === 'ArrowRight') {
-    selectedDate.setHours(selectedDate.getHours() + 2);
+    selectedDate.setHours(selectedDate.getHours() + 1);
     currentViewDate = new Date(selectedDate);
     renderUI();
   } else if (e.key === 'ArrowLeft') {
-    selectedDate.setHours(selectedDate.getHours() - 2);
+    selectedDate.setHours(selectedDate.getHours() - 1);
     currentViewDate = new Date(selectedDate);
     renderUI();
   }
 });
 
 document.getElementById('prevBtn').onclick = () => {
-  selectedDate.setHours(selectedDate.getHours() - 2);
+  selectedDate.setHours(selectedDate.getHours() - 1);
   currentViewDate = new Date(selectedDate);
   renderUI();
 };
 
 document.getElementById('nextBtn').onclick = () => {
-  selectedDate.setHours(selectedDate.getHours() + 2);
+  selectedDate.setHours(selectedDate.getHours() + 1);
   currentViewDate = new Date(selectedDate);
   renderUI();
 };
