@@ -39,7 +39,7 @@ body {
     /* 稍微提升一点，防止贴边 */
     left: 50%;
     transform: translateX(-50%);
-    font-size: 18px;
+    font-size: 14px;
     color: #94a3b8;
     white-space: nowrap;
     z-index: 1;
